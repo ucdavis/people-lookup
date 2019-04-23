@@ -5,13 +5,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PeopleLookup.Mvc.Models;
+using PeopleLookup.Mvc.Services;
 
 namespace PeopleLookup.Mvc.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IIdentityService _identityService;
+
+        public HomeController(IIdentityService identityService)
         {
+            _identityService = identityService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            ViewBag.Test = await _identityService.Test();
             return View();
         }
 

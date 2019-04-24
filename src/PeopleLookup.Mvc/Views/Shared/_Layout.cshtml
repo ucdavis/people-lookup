@@ -16,6 +16,7 @@
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"/>
     </environment>
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
@@ -41,6 +42,22 @@
     </header>
     <div class="container">
         <partial name="_CookieConsentPartial" />
+        @if (!string.IsNullOrWhiteSpace(TempData["ErrorMessage"] as string))
+        {
+            <div class="container">
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">×</button> @TempData["ErrorMessage"]
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrWhiteSpace(TempData["Message"] as string))
+        {
+            <div class="container">
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button> @TempData["Message"]
+                </div>
+            </div>
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

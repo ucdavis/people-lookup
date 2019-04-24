@@ -1,0 +1,130 @@
+﻿@using PeopleLookup.Mvc.Extensions
+@model PeopleLookup.Mvc.Models.BulkModel
+
+@{
+    ViewBag.Title = "Bulk User Lookup";
+    Layout = "_Layout";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h2>@ViewBag.Title</h2>
+        <small class="form-text text-muted">Bulk Emails can have pasted text from a list of emails from outlook. It will strip out the emails.</small>
+        <small class="form-text text-muted">Bulk kerberous ids can be pasted in with and separator (commas or spaces for example)</small>
+    </div>
+    <div class="card-body">
+        <form asp-action="Bulk">
+            <div class="form-group">
+                <label asp-for="BulkEmail" class="control-label"></label>
+                <textarea asp-for="BulkEmail" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="BulkKerb" class="control-label"></label>
+                <textarea asp-for="BulkKerb" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Lookup Users" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@if (Model.Results != null && Model.Results.Count > 0)
+{
+    <div style="padding-top: 15px">
+        <div class="card">
+            <div class="card-header">
+                <h2>Results</h2>
+                <small class="form-text text-muted">To see more details, export the results with one of the buttons on the table (Copy, Excel, etc.).</small>
+                <small class="form-text text-muted">If you have filtered the report with the Search feature, only the filtered results will be exported.</small>
+                <small class="form-text text-muted">You can filter the table with the data that isn't displayed on the screen.</small>
+            </div>
+            <div class="card-body">
+                <table id="results" class="table dataTable">
+                    <thead>
+                        <tr>
+                            <th>Search</th>
+                            <th>Found</th>
+                            <th>Kerb Id</th>
+                            <th>IAM Id</th>
+                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Employee</th>
+                            <th>Student</th>
+                            <th>Faculty</th>
+                            <th>HS Employee</th>
+                            <th>External</th>
+                            <th>Dept(s)</th>
+                            <th>Errors</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Results)
+                        {
+                            var style = string.Empty;
+                            if (!item.Found)
+                            { style = "background-color: lightcoral"; }
+                            <tr style="@style">
+                                <td>@item.SearchValue</td>
+                                <td>@item.Found.ToYesNoString()</td>
+                                <td>@item.KerbId</td>
+                                <td>@item.IamId</td>
+                                <td>@item.Email</td>
+                                <td>@item.FullName</td>
+                                <td>@item.IsEmployee.ToYesNoString()</td>
+                                <td>@item.IsStudent.ToYesNoString()</td>
+                                <td>@item.IsFaculty.ToYesNoString()</td>
+                                <td>@item.IsHSEmployee.ToYesNoString()</td>
+                                <td>@item.IsExternal.ToYesNoString()</td>
+                                <td>@item.Departments</td>
+                                <td>@item.ErrorMessage</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts
+    {
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#results").dataTable({
+                "dom": 'lBfrtip',
+                "buttons": [
+                    { extend: 'copyHtml5' },
+                    { extend: 'excelHtml5' },
+                    { extend: 'csvHtml5' },
+                    { extend: 'print' },
+                ],
+                "columnDefs": [
+                    { "targets" : [ 3,6,7,9,10,11,12], "visible" : false}
+                ]
+            });
+        });
+    </script>
+}
+
+@section Styles
+    {
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css" />
+    <style>
+        .dt-buttons {
+            padding-left: 50px;
+            padding-bottom: 20px;
+        }
+    </style>
+}

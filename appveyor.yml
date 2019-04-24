@@ -21,10 +21,10 @@ cache:
 before_build:
 - ps: |
     appveyor-retry dotnet restore
-    $path = (Get-Item .\src\people-lookup.Mvc.csproj).FullName
+    $path = (Get-Item .\src\PeopleLookup.Mvc.csproj).FullName
     $csproj = [xml](Get-Content $path)
     $csproj.Project.PropertyGroup.Version = $Env:APPVEYOR_BUILD_VERSION
     $csproj.Save($path)
 build_script:
-- cmd: msbuild .\people-lookup.Mvc\people-lookup.Mvc.csproj /t:PublishRunWebpack /p:Configuration=%configuration%
+- cmd: msbuild .\src\PeopleLookup.Mvc.csproj /t:PublishRunWebpack /p:Configuration=%configuration%
 - cmd: msbuild /t:Build /p:Configuration=%configuration%;PackageVersion=%APPVEYOR_BUILD_VERSION%

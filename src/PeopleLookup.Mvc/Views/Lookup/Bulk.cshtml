@@ -1,4 +1,5 @@
-﻿@model PeopleLookup.Mvc.Models.BulkModel
+﻿@using PeopleLookup.Mvc.Extensions
+@model PeopleLookup.Mvc.Models.BulkModel
 
 @{
     ViewBag.Title = "Bulk User Lookup";
@@ -52,7 +53,7 @@
                             { style = "background-color: lightcoral"; }
                             <tr style="@style">
                                 <td>@item.SearchValue</td>
-                                <td>@item.Found</td>
+                                <td>@item.Found.ToYesNoString()</td>
                                 <td>@item.FullName</td>
                             </tr>
                         }

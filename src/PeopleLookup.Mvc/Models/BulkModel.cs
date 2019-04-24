@@ -10,7 +10,7 @@ namespace PeopleLookup.Mvc.Models
     {
         public BulkModel()
         {
-            Results = new List<SearchResults>();
+            Results = new List<SearchResult>();
         }
 
         [DataType(DataType.Text)]
@@ -18,13 +18,18 @@ namespace PeopleLookup.Mvc.Models
         [DataType(DataType.MultilineText)]
         public string BulkKerb { get; set; }
 
-        public IList<SearchResults> Results { get; set; }
+        public IList<SearchResult> Results { get; set; }
     }
 
-    public class SearchResults
+    public class SearchResult
     {
         public string SearchValue { get; set; }
         public bool Found { get; set; } = false;
         public string FullName { get; set; }
+        public string LoginId { get; set; }
+        public string Email { get; set; }
+
+
+        public string ErrorMessage { get; set; }
     }
 }

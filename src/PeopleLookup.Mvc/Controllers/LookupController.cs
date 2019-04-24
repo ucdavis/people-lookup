@@ -8,7 +8,7 @@ using PeopleLookup.Mvc.Services;
 
 namespace PeopleLookup.Mvc.Controllers
 {
-    public class LookupController : Controller
+    public class LookupController : SuperController
     {
         private readonly IIdentityService _identityService;
 
@@ -27,27 +27,45 @@ namespace PeopleLookup.Mvc.Controllers
         {
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";
-
-            model.Results = new List<SearchResults>();
-
-            // Find matches
-            System.Text.RegularExpressions.MatchCollection matches = System.Text.RegularExpressions.Regex.Matches(model.BulkEmail, regexEmailPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-
-            foreach (var match in matches)
+            
+            model.Results = new List<SearchResult>();
+            if (string.IsNullOrWhiteSpace(model.BulkEmail) && string.IsNullOrWhiteSpace(model.BulkKerb))
             {
-                var result = new SearchResults{SearchValue = match.ToString()};
-                var kerbResults = await _identityService.LookupEmail(result.SearchValue);
-                if (kerbResults != null)
-                {
-                    result.Found = true;
-                    result.FullName = kerbResults.FullName;
-                }
-                model.Results.Add(result);
+                ErrorMessage = "You must select something to search";
+                return View(model);
             }
 
+            System.Text.RegularExpressions.MatchCollection matches = null;
+            // Find matches
+            if (!string.IsNullOrWhiteSpace(model.BulkEmail))
+            {
+                matches = System.Text.RegularExpressions.Regex.Matches(model.BulkEmail, regexEmailPattern,
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+                foreach (var match in matches)
+                {
+                    model.Results.Add(await _identityService.LookupEmail(match.ToString()));
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.BulkKerb))
+            {
+                matches = System.Text.RegularExpressions.Regex.Matches(model.BulkKerb, regexKerbPattern,
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                foreach (var match in matches)
+                {
+                    model.Results.Add(await _identityService.LookupKerb(match.ToString()));
+                }
+            }
+
+            if (model.Results.Count == 0)
+            {
+                Message = "No results found. Maybe you didn't paste in emails?";
+            }
 
             return View(model);
         }
+
 
     }
 }

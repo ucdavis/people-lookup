@@ -13,19 +13,15 @@ image: Visual Studio 2017
 
 install:
 - ps: |
-    Install-Product node $env:node_version
 - cmd: echo '%APPVEYOR_REPO_COMMIT_MESSAGE%' > commit.txt 
 
 cache:
 - '%USERPROFILE%\.nuget\packages -> **\*.csproj'
-- '%LOCALAPPDATA%\npm-cache -> **\package.json'         # npm cache
-- '.\people-lookup.Mvc\node_modules -> **\package.json'          # local npm modules
 
 before_build:
 - ps: |
     appveyor-retry dotnet restore
-    rm .\people-lookup.Mvc\package-lock.json
-    $path = (Get-Item .\people-lookup.Mvc\Keas.Mvc.csproj).FullName
+    $path = (Get-Item .\src\people-lookup.Mvc.csproj).FullName
     $csproj = [xml](Get-Content $path)
     $csproj.Project.PropertyGroup.Version = $Env:APPVEYOR_BUILD_VERSION
     $csproj.Save($path)

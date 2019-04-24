@@ -19,7 +19,7 @@ cache:
 before_build:
 - ps: |
     appveyor-retry dotnet restore
-    $path = (Get-Item ..\src\PeopleLookup.Mvc\PeopleLookup.Mvc.csproj).FullName
+    $path = (Get-Item .\src\PeopleLookup.Mvc\PeopleLookup.Mvc.csproj).FullName
     $csproj = [xml](Get-Content $path)
     $csproj.Project.PropertyGroup.Version = $Env:APPVEYOR_BUILD_VERSION
     $csproj.Save($path)

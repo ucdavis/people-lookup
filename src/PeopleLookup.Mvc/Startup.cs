@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AspNetCore.Security.CAS;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +40,52 @@ namespace PeopleLookup.Mvc
 
             services.AddScoped<IIdentityService, IdentityService>();
 
+            // add cas auth backed by a cookie signin scheme
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+                {
+                    options.LoginPath = new PathString("/login");
+                })
+            .AddCAS(options => {
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.CasServerUrlBase = Configuration["Authentication:CasBaseUrl"];
+                options.Events.OnTicketReceived = async context => { 
+                    var c = context;
+
+                    var identity = (ClaimsIdentity) context.Principal.Identity;
+
+                    // kerb comes across in name & name identifier
+                    var kerb = identity?.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                    if (string.IsNullOrWhiteSpace(kerb)) return;
+
+                    var identityService = services.BuildServiceProvider().GetService<IIdentityService>();
+
+                    var user = await identityService.GetByKerberos(kerb);
+
+                    if (user == null)
+                    {
+                        throw new InvalidOperationException("Could not retrieve user information from IAM");
+                    }
+
+                    identity.RemoveClaim(identity.FindFirst(ClaimTypes.NameIdentifier));
+                    identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
+
+                    identity.RemoveClaim(identity.FindFirst(ClaimTypes.Name));
+                    identity.AddClaim(new Claim(ClaimTypes.Name, user.Id));
+
+                    identity.AddClaim(new Claim(ClaimTypes.GivenName, user.FirstName));
+                    identity.AddClaim(new Claim(ClaimTypes.Surname, user.LastName));
+                    identity.AddClaim(new Claim("name", user.Name));
+                    identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+
+                    await Task.FromResult(0); 
+                };
+            });
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -58,6 +107,7 @@ namespace PeopleLookup.Mvc
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

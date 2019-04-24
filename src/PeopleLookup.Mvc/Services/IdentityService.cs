@@ -11,6 +11,7 @@ namespace PeopleLookup.Mvc.Services
     public interface IIdentityService
     {
         Task<string> Test();
+        Task<KerberosResult> LookupEmail(string email);
     }
 
     public class IdentityService : IIdentityService
@@ -43,6 +44,26 @@ namespace PeopleLookup.Mvc.Services
                 var ucdKerbPerson = result.ResponseData.Results.First();
                 var user = ucdKerbPerson.FullName;
                 return user;
+            }
+            return null;
+        }
+
+        public async Task<KerberosResult> LookupEmail(string email)
+        {
+            var clientws = new IetClient(_authSettings.IamKey);
+            var iamResult = await clientws.Contacts.Search(ContactSearchField.email, email);
+            var iamId = iamResult.ResponseData.Results.Length > 0
+                ? iamResult.ResponseData.Results[0].IamId
+                : string.Empty;
+            if (string.IsNullOrWhiteSpace(iamId))
+            {
+                return null;
+            }
+            // return info for the user identified by this IAM 
+            var result = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+            if (result.ResponseData.Results.Length > 0)
+            {
+                return result.ResponseData.Results.First();
             }
             return null;
         }

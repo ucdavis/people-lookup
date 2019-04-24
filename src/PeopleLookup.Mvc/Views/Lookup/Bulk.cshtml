@@ -1,0 +1,24 @@
+﻿@model PeopleLookup.Mvc.Models.BulkModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+
+<form asp-action="Bulk">
+    <div class="form-group">
+        <label asp-for="BulkEmail" class="control-label"></label>
+        <textarea asp-for="BulkEmail" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="BulkKerb" class="control-label"></label>
+        <textarea asp-for="BulkKerb" class="form-control"></textarea>
+    </div>
+    
+    <div class="form-group">
+        <input type="submit" value="Lookup Users" class="btn btn-primary" />
+    </div>
+
+</form>

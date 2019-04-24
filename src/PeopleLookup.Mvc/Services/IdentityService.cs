@@ -117,7 +117,9 @@ namespace PeopleLookup.Mvc.Services
                 searchResult.ErrorMessage = "Contact Info not found.";
                 return searchResult;
             }
-            PopulateSearchResult(searchResult, ucdKerbPerson, ucdContactResult.ResponseData.Results.First().CampusEmail);
+
+            var email = ucdContactResult.ResponseData.Results.First().Email ?? ucdContactResult.ResponseData.Results.First().CampusEmail;
+            PopulateSearchResult(searchResult, ucdKerbPerson, email);
 
 
             return searchResult;

@@ -14,8 +14,10 @@ namespace PeopleLookup.Mvc.Models
         }
 
         [DataType(DataType.Text)]
+        [Display(Name = "Bulk Emails")]
         public string BulkEmail { get; set; }
         [DataType(DataType.MultilineText)]
+        [Display(Name = "Bulk Kerberous Ids")]
         public string BulkKerb { get; set; }
 
         public IList<SearchResult> Results { get; set; }

@@ -44,7 +44,7 @@ namespace PeopleLookup.Mvc.Controllers
 
                 foreach (var match in matches)
                 {
-                    model.Results.Add(await _identityService.LookupEmail(match.ToString()));
+                    model.Results.Add(await _identityService.Lookup(match.ToString()));
                 }
             }
 
@@ -54,7 +54,7 @@ namespace PeopleLookup.Mvc.Controllers
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 foreach (var match in matches)
                 {
-                    model.Results.Add(await _identityService.LookupKerb(match.ToString()));
+                    model.Results.Add(await _identityService.Lookup(match.ToString()));
                 }
             }
 

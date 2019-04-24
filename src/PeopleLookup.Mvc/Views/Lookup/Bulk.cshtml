@@ -42,7 +42,16 @@
                         <tr>
                             <th>Search</th>
                             <th>Found</th>
+                            <th>Kerb Id</th>
+                            <th>IAM Id</th>
+                            <th>Email</th>
                             <th>Full Name</th>
+                            <th>Employee</th>
+                            <th>Student</th>
+                            <th>Faculty</th>
+                            <th>HS Employee</th>
+                            <th>External</th>
+                            <th>Errors</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,7 +63,16 @@
                             <tr style="@style">
                                 <td>@item.SearchValue</td>
                                 <td>@item.Found.ToYesNoString()</td>
+                                <td>@item.KerbId</td>
+                                <td>@item.IamId</td>
+                                <td>@item.Email</td>
                                 <td>@item.FullName</td>
+                                <td>@item.IsEmployee.ToYesNoString()</td>
+                                <td>@item.IsStudent.ToYesNoString()</td>
+                                <td>@item.IsFaculty.ToYesNoString()</td>
+                                <td>@item.IsHSEmployee.ToYesNoString()</td>
+                                <td>@item.IsExternal.ToYesNoString()</td>
+                                <td>@item.ErrorMessage</td>
                             </tr>
                         }
                     </tbody>

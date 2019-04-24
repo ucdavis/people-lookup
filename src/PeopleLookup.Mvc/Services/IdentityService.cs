@@ -10,9 +10,7 @@ namespace PeopleLookup.Mvc.Services
 {
     public interface IIdentityService
     {
-        Task<string> Test();
-        Task<SearchResult> LookupEmail(string email);
-        Task<SearchResult> LookupKerb(string kerb);
+        Task<SearchResult> Lookup(string search);
     }
 
     public class IdentityService : IIdentityService
@@ -24,32 +22,22 @@ namespace PeopleLookup.Mvc.Services
             _authSettings = authSettings.Value;
         }
 
-        public async Task<string> Test()
+        public async Task<SearchResult> Lookup(string search)
         {
-            var clientws = new IetClient(_authSettings.IamKey);
-            // get IAM from email
-            var iamResult = await clientws.Contacts.Search(ContactSearchField.email, "jsylvestre@ucdavis.edu");
-            var iamId = iamResult.ResponseData.Results.Length > 0
-                ? iamResult.ResponseData.Results[0].IamId
-                : string.Empty;
-            if (string.IsNullOrWhiteSpace(iamId))
+            SearchResult searchResult = null;
+            if (search.Contains("@"))
             {
-                return null;
+                searchResult = await LookupEmail(search);
+            }
+            else
+            {
+                searchResult = await LookupKerb(search);
             }
 
-            // return info for the user identified by this IAM 
-            var result = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
-
-            if (result.ResponseData.Results.Length > 0)
-            {
-                var ucdKerbPerson = result.ResponseData.Results.First();
-                var user = ucdKerbPerson.FullName;
-                return user;
-            }
-            return null;
+            return searchResult;
         }
 
-        public async Task<SearchResult> LookupEmail(string email)
+        private async Task<SearchResult> LookupEmail(string email)
         {
             var searchResult = new SearchResult();
             searchResult.SearchValue = email;
@@ -68,17 +56,13 @@ namespace PeopleLookup.Mvc.Services
             if (result.ResponseData.Results.Length > 0)
             {
                 var kerbPerson = result.ResponseData.Results.First();
-                searchResult.Found = true;
-                searchResult.FullName = kerbPerson.FullName;
-                searchResult.SearchValue = email;
-                searchResult.LoginId = kerbPerson.UserId;
-                searchResult.Email = email;
+                PopulateSearchResult(searchResult, kerbPerson, email);
                 return searchResult;
             }
             return searchResult;
         }
 
-        public async Task<SearchResult> LookupKerb(string kerb)
+        private async Task<SearchResult> LookupKerb(string kerb)
         {
             var searchResult = new SearchResult();
             searchResult.SearchValue = kerb;
@@ -111,15 +95,25 @@ namespace PeopleLookup.Mvc.Services
                 searchResult.ErrorMessage = "Contact Info not found.";
                 return searchResult;
             }
+            PopulateSearchResult(searchResult, ucdKerbPerson, ucdContactResult.ResponseData.Results.First().CampusEmail);
 
-            searchResult.Found = true;
-            searchResult.FullName = ucdKerbPerson.FullName;
-            searchResult.SearchValue = kerb;
-            searchResult.LoginId = ucdKerbPerson.UserId;
-            searchResult.Email = ucdContactResult.ResponseData.Results.First().CampusEmail;
 
             return searchResult;
 
+        }
+
+        private void PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, string email)
+        {
+            searchResult.Found = true;
+            searchResult.KerbId = kerbResult.UserId;
+            searchResult.IamId = kerbResult.IamId;
+            searchResult.Email = email;
+            searchResult.FullName = kerbResult.FullName;
+            searchResult.IsEmployee = kerbResult.IsEmployee;
+            searchResult.IsFaculty = kerbResult.IsFaculty;
+            searchResult.IsStudent = kerbResult.IsStudent;
+            searchResult.IsHSEmployee = kerbResult.IsHSEmployee;
+            searchResult.IsExternal = kerbResult.IsExternal;
         }
     }
 }

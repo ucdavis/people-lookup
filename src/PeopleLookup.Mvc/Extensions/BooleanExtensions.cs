@@ -11,5 +11,15 @@ namespace PeopleLookup.Mvc.Extensions
         {
             return value ? "Yes" : "No";
         }
+
+        public static string ToYesNoString(this bool? value)
+        {
+            if (!value.HasValue)
+            {
+                return string.Empty;
+            }
+
+            return value.Value.ToYesNoString();
+        }
     }
 }

@@ -36,6 +36,8 @@ namespace PeopleLookup.Mvc.Models
         public bool IsStudent { get; set; }
         public bool IsExternal { get; set; }
 
+        public string Departments { get; set; }
+
 
         public string ErrorMessage { get; set; }
     }

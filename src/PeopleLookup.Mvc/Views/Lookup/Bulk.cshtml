@@ -51,6 +51,7 @@
                             <th>Faculty</th>
                             <th>HS Employee</th>
                             <th>External</th>
+                            <th>Dept(s)</th>
                             <th>Errors</th>
                         </tr>
                     </thead>
@@ -72,6 +73,7 @@
                                 <td>@item.IsFaculty.ToYesNoString()</td>
                                 <td>@item.IsHSEmployee.ToYesNoString()</td>
                                 <td>@item.IsExternal.ToYesNoString()</td>
+                                <td>@item.Departments</td>
                                 <td>@item.ErrorMessage</td>
                             </tr>
                         }

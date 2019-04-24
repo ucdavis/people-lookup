@@ -34,7 +34,29 @@ namespace PeopleLookup.Mvc.Services
                 searchResult = await LookupKerb(search);
             }
 
+            if (searchResult.Found)
+            {
+                LookupAssociations(searchResult.IamId, searchResult);
+            }
+
             return searchResult;
+        }
+
+        private async void LookupAssociations(string iamId, SearchResult searchResult)
+        {
+            var clientws = new IetClient(_authSettings.IamKey);
+            var result = await clientws.PPSAssociations.Search(PPSAssociationsSearchField.iamId, iamId);
+            if (result.ResponseData.Results.Length > 0)
+            {
+                var depts = new List<string>();
+                foreach (var ppsAssociationsResult in result.ResponseData.Results)
+                {
+                    depts.Add(ppsAssociationsResult.apptDeptDisplayName);
+                }
+
+                searchResult.Departments = string.Join(", ", depts.Distinct());
+            }
+            return;
         }
 
         private async Task<SearchResult> LookupEmail(string email)

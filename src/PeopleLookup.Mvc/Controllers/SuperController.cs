@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace PeopleLookup.Mvc.Controllers
 {
     [AutoValidateAntiforgeryToken]
-    //[Authorize]
+    [Authorize]
     public class SuperController : Controller
     {
         private const string TempDataMessageKey = "Message";

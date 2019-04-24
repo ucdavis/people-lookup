@@ -24,5 +24,5 @@ before_build:
     $csproj.Project.PropertyGroup.Version = $Env:APPVEYOR_BUILD_VERSION
     $csproj.Save($path)
 build_script:
-- cmd: msbuild .\src\PeopleLookup.Mvc.csproj /t:Publish /p:Configuration=%configuration%
+- cmd: msbuild .\src\PeopleLookup.Mvc\PeopleLookup.Mvc.csproj /t:Publish /p:Configuration=%configuration%
 - cmd: msbuild /t:Build /p:Configuration=%configuration%;PackageVersion=%APPVEYOR_BUILD_VERSION%

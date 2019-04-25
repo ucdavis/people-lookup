@@ -17,14 +17,16 @@ steps:
   displayName: 'Build'
   inputs:
     command: 'build'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
   inputs:
     command: 'publish'
-    arguments: '--output $(build.artifactstagingdirectory) --no-build --no-restore'
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
 
-- task: ArchiveFiles@2
+- task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact'
   inputs:
-    rootFolderOrFile: '$(build.artifactstagingdirectory)'
+    ArtifactName: 'drop'

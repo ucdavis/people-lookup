@@ -205,6 +205,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.IsStudent = kerbResult.IsStudent;
             searchResult.IsHSEmployee = kerbResult.IsHSEmployee;
             searchResult.IsExternal = kerbResult.IsExternal;
+            searchResult.IsStaff = kerbResult.IsStaff;
         }
     }
 }

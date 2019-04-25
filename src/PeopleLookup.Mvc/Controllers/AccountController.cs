@@ -13,11 +13,11 @@ namespace PeopleLookup.Mvc.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AuthSettings _AuthSettings;
+        private readonly AuthSettings _authSettings;
         public AccountController(IOptions<AuthSettings> authSettings)
         {
 
-            _AuthSettings = authSettings.Value;
+            _authSettings = authSettings.Value;
         }
         public IActionResult AccessDenied()
         {
@@ -25,10 +25,10 @@ namespace PeopleLookup.Mvc.Controllers
         }
 
         [Route("logout")]
-        public async Task<ActionResult> Login()
+        public async Task<ActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return Redirect($"{_authSettings.CasBaseUrl}logout");
         }
 
         [AllowAnonymous]

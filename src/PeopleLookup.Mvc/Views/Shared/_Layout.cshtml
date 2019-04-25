@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using PeopleLookup.Mvc.Extensions
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PeopleLookup.Mvc</title>
+    <title>@ViewData["Title"] - People Lookup</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -22,7 +23,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PeopleLookup.Mvc</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Lookup" asp-action="Bulk">People Lookup</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -33,10 +34,19 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Lookup" asp-action="Bulk">Lookup</a>
                         </li>
                     </ul>
                 </div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div style="flex-shrink: 0" class="form-inline mt-2 mt-md-0">
+                        <span>Welcome @User.GetNameClaim()</span>
+                        <form class="flexer" asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
+                            <button type="submit" class="btn btn-light" style="margin-left: 8px;">Sign out</button>
+                        </form>
+                    </div>
+                }
             </div>
         </nav>
     </header>
@@ -65,7 +75,8 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - PeopleLookup.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <p>Copyright &copy; 2019 <span id="copywrite-year"></span> The Regents of the University of California, Davis campus. All rights reserved.</p>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

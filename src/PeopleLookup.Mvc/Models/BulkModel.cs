@@ -37,6 +37,31 @@ namespace PeopleLookup.Mvc.Models
         public bool IsFaculty { get; set; }
         public bool IsStudent { get; set; }
         public bool IsExternal { get; set; }
+        public bool IsStaff { get; set; }
+
+        public string ExpandedAffiliation
+        {
+            get
+            {
+                var roles = new List<string>();
+                if (IsStaff)
+                {
+                    roles.Add("Staff");
+                }
+
+                if (IsFaculty)
+                {
+                    roles.Add("Faculty");
+                }
+
+                if (IsStudent)
+                {
+                    roles.Add("Student");
+                }
+
+                return string.Join(", ", roles);
+            }
+        }
 
         public string Departments { get; set; }
 

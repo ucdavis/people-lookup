@@ -54,8 +54,10 @@
                             <th>Employee</th>
                             <th>Student</th>
                             <th>Faculty</th>
+                            <th>Staff</th>                            
                             <th>HS Employee</th>
                             <th>External</th>
+                            <th>Roles</th>
                             <th>Dept(s)</th>
                             <th>Errors</th>
                         </tr>
@@ -76,8 +78,10 @@
                                 <td>@item.IsEmployee.ToYesNoString()</td>
                                 <td>@item.IsStudent.ToYesNoString()</td>
                                 <td>@item.IsFaculty.ToYesNoString()</td>
+                                <td>@item.IsStaff.ToYesNoString()</td>
                                 <td>@item.IsHSEmployee.ToYesNoString()</td>
                                 <td>@item.IsExternal.ToYesNoString()</td>
+                                <td>@item.ExpandedAffiliation</td>
                                 <td>@item.Departments</td>
                                 <td>@item.ErrorMessage</td>
                             </tr>
@@ -110,7 +114,7 @@
                     { extend: 'print' },
                 ],
                 "columnDefs": [
-                    { "targets" : [ 3,6,7,9,10,11,12], "visible" : false}
+                    { "targets" : [ 3,6,7,10,11,12,13], "visible" : false}
                 ]
             });
         });

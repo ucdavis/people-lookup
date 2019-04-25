@@ -25,10 +25,10 @@ namespace PeopleLookup.Mvc.Controllers
         }
 
         [Route("logout")]
-        public async Task<ActionResult> Login()
+        public async Task<ActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return Redirect($"{_AuthSettings.CasBaseUrl}logout");
         }
 
         [AllowAnonymous]

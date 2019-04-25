@@ -22,8 +22,9 @@ steps:
   displayName: 'Publish'
   inputs:
     command: 'publish'
+    arguments: '--output $(build.artifactstagingdirectory) --no-build --no-restore'
 
 - task: ArchiveFiles@2
   displayName: 'Publish Artifact'
   inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    rootFolderOrFile: '$(build.artifactstagingdirectory)'

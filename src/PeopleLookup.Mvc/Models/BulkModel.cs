@@ -38,6 +38,10 @@ namespace PeopleLookup.Mvc.Models
         public bool IsStudent { get; set; }
         public bool IsExternal { get; set; }
         public bool IsStaff { get; set; }
+        public string PpsId { get; set; }
+        public string StudentId { get; set;}
+        public string BannerPidm { get; set; }
+        
 
         public string ExpandedAffiliation
         {

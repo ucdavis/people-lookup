@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PeopleLookup.Mvc.Models;
 using PeopleLookup.Mvc.Services;
 
@@ -11,10 +13,12 @@ namespace PeopleLookup.Mvc.Controllers
     public class LookupController : SuperController
     {
         private readonly IIdentityService _identityService;
+        private readonly AuthSettings _authSettings;
 
-        public LookupController(IIdentityService identityService)
+        public LookupController(IIdentityService identityService, IOptions<AuthSettings> authSettings)
         {
             _identityService = identityService;
+            _authSettings = authSettings.Value;
         }
         public IActionResult Bulk()
         {
@@ -25,6 +29,8 @@ namespace PeopleLookup.Mvc.Controllers
         [HttpPost]
         public async Task<ActionResult> Bulk(BulkModel model)
         {
+            var allowSearchStudnets = _authSettings.AllowSearchStudent.Split(',').Contains(User.Identity.Name);
+
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";
             
@@ -44,7 +50,7 @@ namespace PeopleLookup.Mvc.Controllers
 
                 foreach (var match in matches)
                 {
-                    model.Results.Add(await _identityService.Lookup(match.ToString()));
+                    model.Results.Add(await _identityService.Lookup(match.ToString(), allowSearchStudnets));
                 }
             }
 
@@ -54,7 +60,7 @@ namespace PeopleLookup.Mvc.Controllers
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 foreach (var match in matches)
                 {
-                    model.Results.Add(await _identityService.Lookup(match.ToString()));
+                    model.Results.Add(await _identityService.Lookup(match.ToString(), allowSearchStudnets));
                 }
             }
 

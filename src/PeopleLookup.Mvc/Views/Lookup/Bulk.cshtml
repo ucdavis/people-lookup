@@ -49,6 +49,9 @@
                             <th>Found</th>
                             <th>Kerb Id</th>
                             <th>IAM Id</th>
+                            <th>PPS Id</th>
+                            <th>Student Id</th>
+                            <th>Banner PIDM</th>
                             <th>Email</th>
                             <th>Full Name</th>
                             <th>Employee</th>
@@ -73,6 +76,9 @@
                                 <td>@item.Found.ToYesNoString()</td>
                                 <td>@item.KerbId</td>
                                 <td>@item.IamId</td>
+                                <td>@item.PpsId</td>
+                                <td>@item.StudentId</td>
+                                <td>@item.BannerPidm</td>
                                 <td>@item.Email</td>
                                 <td>@item.FullName</td>
                                 <td>@item.IsEmployee.ToYesNoString()</td>
@@ -114,7 +120,7 @@
                     { extend: 'print' },
                 ],
                 "columnDefs": [
-                    { "targets" : [ 3,6,7,10,11,12,13,14], "visible" : false}
+                    { "targets" : [ 3,4,5,6,9,10,13,14,15,16,17], "visible" : false}
                 ]
             });
         });

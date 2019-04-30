@@ -11,29 +11,28 @@ namespace PeopleLookup.Mvc.Services
 {
     public interface IIdentityService
     {
-        Task<SearchResult> Lookup(string search);
+        Task<SearchResult> Lookup(string search, bool populateStudentIds = false );
         Task<User> GetByKerberos(string kerb);
     }
 
     public class IdentityService : IIdentityService
     {
         private readonly AuthSettings _authSettings;
-
         public IdentityService(IOptions<AuthSettings> authSettings)
         {
             _authSettings = authSettings.Value;
         }
 
-        public async Task<SearchResult> Lookup(string search)
+        public async Task<SearchResult> Lookup(string search, bool populateStudentIds = false)
         {
             SearchResult searchResult = null;
             if (search.Contains("@"))
             {
-                searchResult = await LookupEmail(search);
+                searchResult = await LookupEmail(search, populateStudentIds);
             }
             else
             {
-                searchResult = await LookupKerb(search);
+                searchResult = await LookupKerb(search, populateStudentIds);
             }
 
             if (searchResult.Found)
@@ -96,7 +95,7 @@ namespace PeopleLookup.Mvc.Services
             return rtValue;
         }
 
-                private User CreateUser(string email, KerberosResult ucdKerbPerson, string iamId)
+        private User CreateUser(string email, KerberosResult ucdKerbPerson, string iamId)
         {
             var user = new User()
             {
@@ -126,7 +125,7 @@ namespace PeopleLookup.Mvc.Services
             return;
         }
 
-        private async Task<SearchResult> LookupEmail(string email)
+        private async Task<SearchResult> LookupEmail(string email, bool populateStudentIds)
         {
             var searchResult = new SearchResult();
             searchResult.SearchValue = email;
@@ -145,13 +144,13 @@ namespace PeopleLookup.Mvc.Services
             if (result.ResponseData.Results.Length > 0)
             {
                 var kerbPerson = result.ResponseData.Results.First();
-                PopulateSearchResult(searchResult, kerbPerson, email);
+                PopulateSearchResult(searchResult, kerbPerson, email, populateStudentIds);
                 return searchResult;
             }
             return searchResult;
         }
 
-        private async Task<SearchResult> LookupKerb(string kerb)
+        private async Task<SearchResult> LookupKerb(string kerb, bool populateStudentIds)
         {
             var searchResult = new SearchResult();
             searchResult.SearchValue = kerb;
@@ -186,14 +185,14 @@ namespace PeopleLookup.Mvc.Services
             }
 
             var email = ucdContactResult.ResponseData.Results.First().Email ?? ucdContactResult.ResponseData.Results.First().CampusEmail;
-            PopulateSearchResult(searchResult, ucdKerbPerson, email);
+            PopulateSearchResult(searchResult, ucdKerbPerson, email, populateStudentIds);
 
 
             return searchResult;
 
         }
 
-        private void PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, string email)
+        private void PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, string email, bool populateStudentIds = false)
         {
             searchResult.Found = true;
             searchResult.KerbId = kerbResult.UserId;
@@ -206,6 +205,12 @@ namespace PeopleLookup.Mvc.Services
             searchResult.IsHSEmployee = kerbResult.IsHSEmployee;
             searchResult.IsExternal = kerbResult.IsExternal;
             searchResult.IsStaff = kerbResult.IsStaff;
+            searchResult.PpsId = kerbResult.PpsId;
+            if (populateStudentIds)
+            {
+                searchResult.StudentId = kerbResult.StudentId;
+                searchResult.BannerPidm = kerbResult.BannerPidm;
+            }
         }
     }
 }

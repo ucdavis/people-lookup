@@ -111,17 +111,26 @@ namespace PeopleLookup.Mvc.Services
         private async void LookupAssociations(string iamId, SearchResult searchResult)
         {
             var clientws = new IetClient(_authSettings.IamKey);
-            var result = await clientws.PPSAssociations.Search(PPSAssociationsSearchField.iamId, iamId);
-            if (result.ResponseData.Results.Length > 0)
+            try
             {
-                var depts = new List<string>();
-                foreach (var ppsAssociationsResult in result.ResponseData.Results)
+                var result = await clientws.PPSAssociations.Search(PPSAssociationsSearchField.iamId, iamId);
+                if (result.ResponseData.Results.Length > 0)
                 {
-                    depts.Add(ppsAssociationsResult.apptDeptDisplayName);
-                }
+                    var depts = new List<string>();
+                    foreach (var ppsAssociationsResult in result.ResponseData.Results)
+                    {
+                        depts.Add(ppsAssociationsResult.apptDeptDisplayName);
+                    }
 
-                searchResult.Departments = string.Join(", ", depts.Distinct());
+                    searchResult.Departments = string.Join(", ", depts.Distinct());
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
             return;
         }
 

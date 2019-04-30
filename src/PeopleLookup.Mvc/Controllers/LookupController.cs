@@ -22,6 +22,9 @@ namespace PeopleLookup.Mvc.Controllers
         }
         public IActionResult Bulk()
         {
+            var allowSearchStudnets = _authSettings.AllowSearchStudent.Split(',').Contains(User.Identity.Name);
+            ViewBag.ShowStudentInfo = allowSearchStudnets;
+
             var model = new BulkModel();
             return View(model);
         }
@@ -30,6 +33,7 @@ namespace PeopleLookup.Mvc.Controllers
         public async Task<ActionResult> Bulk(BulkModel model)
         {
             var allowSearchStudnets = _authSettings.AllowSearchStudent.Split(',').Contains(User.Identity.Name);
+            ViewBag.ShowStudentInfo = allowSearchStudnets;
 
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";

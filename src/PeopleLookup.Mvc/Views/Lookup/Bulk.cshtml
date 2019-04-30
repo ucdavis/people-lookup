@@ -123,7 +123,7 @@
 
 
 @section Scripts
-    {
+{
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
@@ -133,37 +133,65 @@
 
 
     <script type="text/javascript">
-        $(function () {
-           var table = $("#results").DataTable({
+        $(function() {
+            var showStudent = ('@ViewBag.ShowStudentInfo' === 'True');
+            var showCols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+
+            if (showStudent !== true) {
+                showCols = [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+            }
+            var table = $("#results").DataTable({
                 "dom": 'lBfrtip',
                 "buttons": [
-                    { extend: 'copyHtml5' },
-                    { extend: 'excelHtml5' },
-                    { extend: 'csvHtml5' },
-                    { extend: 'print' },
+                    {
+                        extend: 'copyHtml5',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
                 ],
                 "columnDefs": [
-                    { "targets" : [ 3,4,5,6,9,10,13,14,15,16,17], "visible" : false}
+                    { "targets": [3, 4, 5, 6, 9, 10, 13, 14, 15, 16, 17], "visible": false }
                 ]
             });
 
-           $('#results tbody').on('click',
-               'tr',
-               function() {
-                   var data = table.row(this).data();;
-                   
-                   var tableDetails =  $("#table-details");
-                   tableDetails.empty();
-                   $.each(data,function(index, value) {
-                       var lab = table.column(index).header().innerText;
-  
-                       tableDetails.append("<tr><td>" + lab + "</td><td>" + value + "</td></tr>");
-                   });
-                   
-                   $('#exampleModalLong').trigger('focus');
-               });
-        });
+            $('#results tbody').on('click',
+                'tr',
+                function() {
+                    var data = table.row(this).data();;
 
+                    var tableDetails = $("#table-details");
+                    tableDetails.empty();
+                    $.each(data,
+                        function(index, value) {
+                            if (showCols.indexOf(index) > -1) {
+                                var lab = table.column(index).header().innerText;
+
+                                tableDetails.append("<tr><td>" + lab + "</td><td>" + value + "</td></tr>");
+                            }
+                        });
+
+                    $('#exampleModalLong').trigger('focus');
+                });
+        });
 
 
     </script>

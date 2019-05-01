@@ -37,7 +37,7 @@
         <div class="card">
             <div class="card-header">
                 <h2>Results</h2>
-                <small class="form-text text-muted">To see more details, export the results with one of the buttons on the table (Copy, Excel, etc.). If you filter (Search) or sort the table before exporting, that will also be applied to the export.</small>
+                <small class="form-text text-muted">To see more details, <strong>click on the row</strong> or export the results with one of the buttons on the table (Copy, Excel, etc.). If you filter (Search) or sort the table before exporting, that will also be applied to the export.</small>
                 <small class="form-text text-muted">If you have filtered the report with the Search feature, only the filtered results will be exported.</small>
                 <small class="form-text text-muted">You can filter the table with the data that isn't displayed on the screen.</small>
             </div>
@@ -49,6 +49,9 @@
                             <th>Found</th>
                             <th>Kerb Id</th>
                             <th>IAM Id</th>
+                            <th>PPS Id</th>
+                            <th>Student Id</th>
+                            <th>Banner PIDM</th>
                             <th>Email</th>
                             <th>Full Name</th>
                             <th>Employee</th>
@@ -68,11 +71,14 @@
                             var style = string.Empty;
                             if (!item.Found)
                             { style = "background-color: lightcoral"; }
-                            <tr style="@style">
+                            <tr style="@style" data-toggle="modal" data-target="#row-details">
                                 <td>@item.SearchValue</td>
                                 <td>@item.Found.ToYesNoString()</td>
                                 <td>@item.KerbId</td>
                                 <td>@item.IamId</td>
+                                <td>@item.PpsId</td>
+                                <td>@item.StudentId</td>
+                                <td>@item.BannerPidm</td>
                                 <td>@item.Email</td>
                                 <td>@item.FullName</td>
                                 <td>@item.IsEmployee.ToYesNoString()</td>
@@ -93,31 +99,101 @@
     </div>
 }
 
+<!-- Modal -->
+<div class="modal fade" id="row-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Person Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <table id="table-details" class="table ">
+
+          </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 @section Scripts
-    {
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+{
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
 
+
     <script type="text/javascript">
-        $(function () {
-            $("#results").dataTable({
+        $(function() {
+            var showStudent = ('@ViewBag.ShowStudentInfo' === 'True');
+            var showCols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+
+            if (showStudent !== true) {
+                showCols = [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+            }
+            var table = $("#results").DataTable({
                 "dom": 'lBfrtip',
                 "buttons": [
-                    { extend: 'copyHtml5' },
-                    { extend: 'excelHtml5' },
-                    { extend: 'csvHtml5' },
-                    { extend: 'print' },
+                    {
+                        extend: 'copyHtml5',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: showCols
+                        }
+                    },
                 ],
                 "columnDefs": [
-                    { "targets" : [ 3,6,7,10,11,12,13,14], "visible" : false}
+                    { "targets": [3, 4, 5, 6, 9, 10, 13, 14, 15, 16, 17], "visible": false }
                 ]
             });
+
+            $('#results tbody').on('click',
+                'tr',
+                function() {
+                    var data = table.row(this).data();;
+
+                    var tableDetails = $("#table-details");
+                    tableDetails.empty();
+                    $.each(data,
+                        function(index, value) {
+                            if (showCols.indexOf(index) > -1) {
+                                var lab = table.column(index).header().innerText;
+
+                                tableDetails.append("<tr><td>" + lab + "</td><td>" + value + "</td></tr>");
+                            }
+                        });
+
+                    $('#exampleModalLong').trigger('focus');
+                });
         });
+
+
     </script>
 }
 

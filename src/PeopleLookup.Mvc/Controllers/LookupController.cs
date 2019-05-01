@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PeopleLookup.Mvc.Models;
 using PeopleLookup.Mvc.Services;
 
@@ -11,13 +13,18 @@ namespace PeopleLookup.Mvc.Controllers
     public class LookupController : SuperController
     {
         private readonly IIdentityService _identityService;
+        private readonly IPermissionService _permissionService;
 
-        public LookupController(IIdentityService identityService)
+
+        public LookupController(IIdentityService identityService, IPermissionService permissionService)
         {
             _identityService = identityService;
+            _permissionService = permissionService;
         }
         public IActionResult Bulk()
         {
+            ViewBag.ShowStudentInfo = _permissionService.CanSeeSensitiveInfo();
+
             var model = new BulkModel();
             return View(model);
         }
@@ -25,6 +32,9 @@ namespace PeopleLookup.Mvc.Controllers
         [HttpPost]
         public async Task<ActionResult> Bulk(BulkModel model)
         {
+            var allowSearchStudents = _permissionService.CanSeeSensitiveInfo();
+            ViewBag.ShowStudentInfo = allowSearchStudents;
+
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";
             
@@ -44,7 +54,12 @@ namespace PeopleLookup.Mvc.Controllers
 
                 foreach (var match in matches)
                 {
-                    model.Results.Add(await _identityService.Lookup(match.ToString()));
+                    var result = await _identityService.Lookup(match.ToString());
+                    if (!allowSearchStudents)
+                    {
+                        result.HideSensitiveFields();
+                    }
+                    model.Results.Add(result);
                 }
             }
 
@@ -54,7 +69,12 @@ namespace PeopleLookup.Mvc.Controllers
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 foreach (var match in matches)
                 {
-                    model.Results.Add(await _identityService.Lookup(match.ToString()));
+                    var result = await _identityService.Lookup(match.ToString());
+                    if (!allowSearchStudents)
+                    {
+                        result.HideSensitiveFields();
+                    }
+                    model.Results.Add(result);
                 }
             }
 

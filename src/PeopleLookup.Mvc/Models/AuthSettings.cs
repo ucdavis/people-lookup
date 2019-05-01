@@ -9,5 +9,6 @@ namespace PeopleLookup.Mvc.Models
     {
         public string IamKey { get; set; }
         public string CasBaseUrl { get; set; }
+        public string AllowSearchStudent { get; set; }
     }
 }

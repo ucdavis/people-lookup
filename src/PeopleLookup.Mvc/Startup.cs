@@ -39,6 +39,8 @@ namespace PeopleLookup.Mvc
             });
 
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IPermissionService, PermissionService>();
 
             // add cas auth backed by a cookie signin scheme
             services.AddAuthentication(options =>

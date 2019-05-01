@@ -46,6 +46,7 @@ namespace PeopleLookup.Mvc.Models
         {
             StudentId = null;
             BannerPidm = null;
+            PpsId = null;
         }
 
         public string ExpandedAffiliation

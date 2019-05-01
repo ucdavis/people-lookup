@@ -20,6 +20,9 @@ namespace PeopleLookup.Mvc.Models
         [Display(Name = "Bulk Kerberous Ids")]
         public string BulkKerb { get; set; }
 
+        [Display(Name = "Bulk Student Ids")]
+        public string BulkStudentIds { get; set; }
+
         public IList<SearchResult> Results { get; set; }
     }
 

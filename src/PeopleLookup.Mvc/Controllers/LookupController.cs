@@ -13,17 +13,17 @@ namespace PeopleLookup.Mvc.Controllers
     public class LookupController : SuperController
     {
         private readonly IIdentityService _identityService;
-        private readonly AuthSettings _authSettings;
+        private readonly IPermissionService _permissionService;
 
-        public LookupController(IIdentityService identityService, IOptions<AuthSettings> authSettings)
+
+        public LookupController(IIdentityService identityService, IPermissionService permissionService)
         {
             _identityService = identityService;
-            _authSettings = authSettings.Value;
+            _permissionService = permissionService;
         }
         public IActionResult Bulk()
         {
-            var allowSearchStudents = _authSettings.AllowSearchStudent.Split(',').Contains(User.Identity.Name);
-            ViewBag.ShowStudentInfo = allowSearchStudents;
+            ViewBag.ShowStudentInfo = _permissionService.CanSeeSensitiveInfo();
 
             var model = new BulkModel();
             return View(model);
@@ -32,7 +32,7 @@ namespace PeopleLookup.Mvc.Controllers
         [HttpPost]
         public async Task<ActionResult> Bulk(BulkModel model)
         {
-            var allowSearchStudents = _authSettings.AllowSearchStudent.Split(',').Contains(User.Identity.Name);
+            var allowSearchStudents = _permissionService.CanSeeSensitiveInfo();
             ViewBag.ShowStudentInfo = allowSearchStudents;
 
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";

@@ -37,7 +37,7 @@ namespace PeopleLookup.Mvc.Services
 
             if (searchResult.Found)
             {
-                LookupAssociations(searchResult.IamId, searchResult);
+                await LookupAssociations(searchResult.IamId, searchResult);
             }
 
             return searchResult;
@@ -108,9 +108,10 @@ namespace PeopleLookup.Mvc.Services
             return user;
         }
 
-        private async void LookupAssociations(string iamId, SearchResult searchResult)
+        private async Task LookupAssociations(string iamId, SearchResult searchResult)
         {
             var clientws = new IetClient(_authSettings.IamKey);
+
             var result = await clientws.PPSAssociations.Search(PPSAssociationsSearchField.iamId, iamId);
             if (result.ResponseData.Results.Length > 0)
             {
@@ -122,6 +123,7 @@ namespace PeopleLookup.Mvc.Services
 
                 searchResult.Departments = string.Join(", ", depts.Distinct());
             }
+            
             return;
         }
 

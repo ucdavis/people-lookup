@@ -12,6 +12,7 @@ namespace PeopleLookup.Mvc.Services
     public interface IIdentityService
     {
         Task<SearchResult> Lookup(string search);
+        Task<SearchResult> LookupStudentId(string search);
         Task<User> GetByKerberos(string kerb);
     }
 
@@ -40,6 +41,43 @@ namespace PeopleLookup.Mvc.Services
                 await LookupAssociations(searchResult.IamId, searchResult);
             }
 
+            return searchResult;
+        }
+
+        public async Task<SearchResult> LookupStudentId(string search)
+        {
+            var searchResult = new SearchResult();
+            searchResult.SearchValue = search;
+
+            var clientws = new IetClient(_authSettings.IamKey);
+            var peopleResult = await clientws.People.Search(PeopleSearchField.studentId, search);
+            var iamId = peopleResult.ResponseData.Results.Length > 0
+                ? peopleResult.ResponseData.Results[0].IamId
+                : string.Empty;
+            if (string.IsNullOrWhiteSpace(iamId))
+            {
+                return searchResult;
+            }
+
+            // find their email
+            var ucdContactResult = await clientws.Contacts.Get(iamId);
+
+            if(ucdContactResult.ResponseData.Results.Length == 0)
+            {
+                return null;
+            }
+
+            // return info for the user identified by this IAM 
+            var result = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+            if (result.ResponseData.Results.Length > 0)
+            {
+                var kerbPerson = result.ResponseData.Results.First();
+                PopulateSearchResult(searchResult, kerbPerson, ucdContactResult.ResponseData.Results.First().Email);
+            }
+            if (searchResult.Found)
+            {
+                await LookupAssociations(searchResult.IamId, searchResult);
+            }
             return searchResult;
         }
 
@@ -151,6 +189,8 @@ namespace PeopleLookup.Mvc.Services
             }
             return searchResult;
         }
+
+       
 
         private async Task<SearchResult> LookupKerb(string kerb)
         {

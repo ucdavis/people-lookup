@@ -37,9 +37,10 @@ namespace PeopleLookup.Mvc.Controllers
 
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";
+            const string regexStudentIdPattern = @"\b[0-9]{2,10}\b";
             
             model.Results = new List<SearchResult>();
-            if (string.IsNullOrWhiteSpace(model.BulkEmail) && string.IsNullOrWhiteSpace(model.BulkKerb))
+            if (string.IsNullOrWhiteSpace(model.BulkEmail) && string.IsNullOrWhiteSpace(model.BulkKerb) && string.IsNullOrWhiteSpace(model.BulkStudentIds))
             {
                 ErrorMessage = "You must select something to search";
                 return View(model);
@@ -75,6 +76,21 @@ namespace PeopleLookup.Mvc.Controllers
                         result.HideSensitiveFields();
                     }
                     model.Results.Add(result);
+                }
+            }
+
+            if (allowSearchStudents)
+            {
+                if (!string.IsNullOrWhiteSpace(model.BulkStudentIds))
+                {
+                    matches = System.Text.RegularExpressions.Regex.Matches(model.BulkStudentIds, regexStudentIdPattern,
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    foreach (var match in matches)
+                    {
+                        var result = await _identityService.LookupStudentId(match.ToString());
+
+                        model.Results.Add(result);
+                    }
                 }
             }
 

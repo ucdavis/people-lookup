@@ -4,6 +4,7 @@
 @{
     ViewBag.Title = "Bulk User Lookup";
     Layout = "_Layout";
+    var showStudent = (bool)ViewBag.ShowStudentInfo;
 }
 
 <div class="card">
@@ -22,6 +23,13 @@
                 <label asp-for="BulkKerb" class="control-label"></label>
                 <textarea asp-for="BulkKerb" class="form-control"></textarea>
             </div>
+            @if (showStudent)
+            {
+                <div class="form-group">
+                    <label asp-for="BulkStudentIds" class="control-label"></label>
+                    <textarea asp-for="BulkStudentIds" class="form-control"></textarea>
+                </div>
+            }
 
             <div class="form-group">
                 <input type="submit" value="Lookup Users" class="btn btn-primary" />

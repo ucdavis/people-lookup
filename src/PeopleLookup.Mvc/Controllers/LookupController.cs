@@ -23,7 +23,7 @@ namespace PeopleLookup.Mvc.Controllers
         }
         public IActionResult Bulk()
         {
-            ViewBag.ShowStudentInfo = _permissionService.CanSeeSensitiveInfo();
+            ViewBag.AllowSensitiveInfo = _permissionService.CanSeeSensitiveInfo();
 
             var model = new BulkModel();
             return View(model);
@@ -32,8 +32,8 @@ namespace PeopleLookup.Mvc.Controllers
         [HttpPost]
         public async Task<ActionResult> Bulk(BulkModel model)
         {
-            var allowSearchStudents = _permissionService.CanSeeSensitiveInfo();
-            ViewBag.ShowStudentInfo = allowSearchStudents;
+            var allowSensitiveInfo = _permissionService.CanSeeSensitiveInfo();
+            ViewBag.AllowSensitiveInfo = allowSensitiveInfo;
 
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";
@@ -56,7 +56,7 @@ namespace PeopleLookup.Mvc.Controllers
                 foreach (var match in matches)
                 {
                     var result = await _identityService.Lookup(match.ToString());
-                    if (!allowSearchStudents)
+                    if (!allowSensitiveInfo)
                     {
                         result.HideSensitiveFields();
                     }
@@ -71,7 +71,7 @@ namespace PeopleLookup.Mvc.Controllers
                 foreach (var match in matches)
                 {
                     var result = await _identityService.Lookup(match.ToString());
-                    if (!allowSearchStudents)
+                    if (!allowSensitiveInfo)
                     {
                         result.HideSensitiveFields();
                     }
@@ -79,7 +79,7 @@ namespace PeopleLookup.Mvc.Controllers
                 }
             }
 
-            if (allowSearchStudents)
+            if (allowSensitiveInfo)
             {
                 if (!string.IsNullOrWhiteSpace(model.BulkStudentIds))
                 {

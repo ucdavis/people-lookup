@@ -26,7 +26,7 @@ namespace PeopleLookup.Mvc.Services
 
         public bool CanSeeSensitiveInfo()
         {
-            return _authSettings.AllowSearchStudent.Split(',').Contains(_contextAccessor.HttpContext.User.Identity.Name);
+            return _authSettings.ShowSensitiveInfo.Split(',').Contains(_contextAccessor.HttpContext.User.Identity.Name);
         }
     }
 }

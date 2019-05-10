@@ -44,6 +44,10 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
+  background-color:#F8F9FB
+}
+.header {
+  background-color:#fff;
 }
 .footer {
   position: absolute;
@@ -53,4 +57,15 @@ body {
   /* Set the fixed height of the footer here */
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
+  background-color:#fff;
+}
+p.discreet {
+  color:#DCDCDC;
+}
+.btn-primary {
+  background-color: #004987;
+  border-color: #004987;
+}
+.card {
+  box-shadow:0 0 0 1px rgba(49,49,93,.03), 0 2px 5px 0 rgba(49,49,93,.1), 0 1px 2px 0 rgba(0,0,0,.08);
 }

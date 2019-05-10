@@ -17,7 +17,7 @@ namespace PeopleLookup.Mvc.Models
         [Display(Name = "Bulk Emails")]
         public string BulkEmail { get; set; }
         [DataType(DataType.MultilineText)]
-        [Display(Name = "Bulk Kerberous Ids")]
+        [Display(Name = "Bulk Kerberos Ids")]
         public string BulkKerb { get; set; }
 
         [Display(Name = "Bulk Student Ids")]

@@ -175,6 +175,19 @@
                             columns: showCols
                         }
                     },
+                    {
+                        text: 'JSON',
+                        action: function ( e, dt, button, config ) {
+                            var data = dt.buttons.exportData({
+                                columns: showCols
+                            });
+ 
+                            $.fn.dataTable.fileSave(
+                                new Blob( [ JSON.stringify( data ) ] ),
+                                'Export.json'
+                            );
+                        }
+                    },
                 ],
                 "columnDefs": [
                     { "targets": [3, 4, 5, 6, 9, 10, 13, 14, 15, 16, 17], "visible": false }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PeopleLookup.Mvc.Models;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Ietws;
 using Microsoft.AspNetCore.Authorization;
 using PeopleLookup.Mvc.Services;
 
@@ -36,9 +37,10 @@ namespace PeopleLookup.Mvc.Controllers
             const string regexEmailPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";
             const string regexStudentIdPattern = @"\b[0-9]{2,10}\b";
-            
+            const string regexPpsIdPattern = @"\b[0-9]{2,10}\b"; //Based off StudentId???
+
             model.Results = new List<SearchResult>();
-            if (string.IsNullOrWhiteSpace(model.BulkEmail) && string.IsNullOrWhiteSpace(model.BulkKerb) && string.IsNullOrWhiteSpace(model.BulkStudentIds))
+            if (string.IsNullOrWhiteSpace(model.BulkEmail) && string.IsNullOrWhiteSpace(model.BulkKerb) && string.IsNullOrWhiteSpace(model.BulkStudentIds) && string.IsNullOrWhiteSpace(model.BulkPpsIds))
             {
                 ErrorMessage = "You must select something to search";
                 return View(model);
@@ -85,7 +87,19 @@ namespace PeopleLookup.Mvc.Controllers
                         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                     foreach (var match in matches)
                     {
-                        var result = await _identityService.LookupStudentId(match.ToString());
+                        var result = await _identityService.LookupId(PeopleSearchField.studentId, match.ToString());
+
+                        model.Results.Add(result);
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.BulkPpsIds))
+                {
+                    matches = System.Text.RegularExpressions.Regex.Matches(model.BulkPpsIds, regexPpsIdPattern,
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    foreach (var match in matches)
+                    {
+                        var result = await _identityService.LookupId(PeopleSearchField.ppsId, match.ToString());
 
                         model.Results.Add(result);
                     }

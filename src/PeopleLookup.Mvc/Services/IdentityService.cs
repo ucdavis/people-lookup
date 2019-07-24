@@ -12,7 +12,7 @@ namespace PeopleLookup.Mvc.Services
     public interface IIdentityService
     {
         Task<SearchResult> Lookup(string search);
-        Task<SearchResult> LookupStudentId(string search);
+        Task<SearchResult> LookupId(PeopleSearchField searchField, string search);
         Task<User> GetByKerberos(string kerb);
     }
 
@@ -44,13 +44,13 @@ namespace PeopleLookup.Mvc.Services
             return searchResult;
         }
 
-        public async Task<SearchResult> LookupStudentId(string search)
+        public async Task<SearchResult> LookupId(PeopleSearchField searchField, string search)
         {
             var searchResult = new SearchResult();
             searchResult.SearchValue = search;
 
             var clientws = new IetClient(_authSettings.IamKey);
-            var peopleResult = await clientws.People.Search(PeopleSearchField.studentId, search);
+            var peopleResult = await clientws.People.Search(searchField, search);
             var iamId = peopleResult.ResponseData.Results.Length > 0
                 ? peopleResult.ResponseData.Results[0].IamId
                 : string.Empty;
@@ -62,7 +62,7 @@ namespace PeopleLookup.Mvc.Services
             // find their email
             var ucdContactResult = await clientws.Contacts.Get(iamId);
 
-            if(ucdContactResult.ResponseData.Results.Length == 0)
+            if (ucdContactResult.ResponseData.Results.Length == 0)
             {
                 return null;
             }

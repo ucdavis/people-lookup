@@ -14,7 +14,7 @@
         <small class="form-text text-muted">Bulk Kerberos ids can be pasted in with a separator (commas or spaces for example)</small>
     </div>
     <div class="card-body">
-        <form asp-action="Bulk">
+        <form asp-action="Index">
             <div class="form-group">
                 <label asp-for="BulkEmail" class="control-label"></label>
                 <textarea asp-for="BulkEmail" class="form-control"></textarea>
@@ -28,6 +28,10 @@
                 <div class="form-group">
                     <label asp-for="BulkStudentIds" class="control-label"></label>
                     <textarea asp-for="BulkStudentIds" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label asp-for="BulkPpsIds" class="control-label"></label>
+                    <textarea asp-for="BulkPpsIds" class="form-control"></textarea>
                 </div>
             }
 

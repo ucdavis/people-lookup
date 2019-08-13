@@ -48,6 +48,8 @@ namespace PeopleLookup.Mvc.Models
         public string StudentId { get; set;}
         public string BannerPidm { get; set; }
 
+        public string Title { get; set; }
+
         public void HideSensitiveFields()
         {
             StudentId = null;

@@ -160,6 +160,7 @@ namespace PeopleLookup.Mvc.Services
                 }
 
                 searchResult.Departments = string.Join(", ", depts.Distinct());
+                searchResult.Title = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.titleOfficialName))?.titleOfficialName;
             }
             
             return;

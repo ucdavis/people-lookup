@@ -39,6 +39,7 @@ namespace PeopleLookup.Mvc.Services
             if (searchResult.Found)
             {
                 await LookupAssociations(searchResult.IamId, searchResult);
+                await LookupEmployeeId(searchResult.IamId, searchResult);
             }
 
             return searchResult;
@@ -61,7 +62,6 @@ namespace PeopleLookup.Mvc.Services
 
             // find their email
             var ucdContactResult = await clientws.Contacts.Get(iamId);
-
             if (ucdContactResult.ResponseData.Results.Length == 0)
             {
                 return null;
@@ -72,15 +72,18 @@ namespace PeopleLookup.Mvc.Services
             if (result.ResponseData.Results.Length > 0)
             {
                 var kerbPerson = result.ResponseData.Results.First();
+                kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
                 PopulateSearchResult(searchResult, kerbPerson, ucdContactResult.ResponseData.Results.First().Email);
             }
             if (searchResult.Found)
             {
                 await LookupAssociations(searchResult.IamId, searchResult);
+                await LookupEmployeeId(searchResult.IamId, searchResult); //Shouldn't need it as it should be in the if above
             }
             return searchResult;
         }
 
+        //Just used for logging in.
         public async Task<User> GetByKerberos(string kerb)
         {
             var clientws = new IetClient(_authSettings.IamKey);
@@ -160,9 +163,25 @@ namespace PeopleLookup.Mvc.Services
                 }
 
                 searchResult.Departments = string.Join(", ", depts.Distinct());
+                searchResult.Title = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.titleOfficialName))?.titleOfficialName;
             }
             
             return;
+        }
+
+        private async Task LookupEmployeeId(string iamId, SearchResult searchResult)
+        {
+            if (!string.IsNullOrWhiteSpace(searchResult.EmployeeId))
+            {
+                //Already got it
+                return;
+            }
+            var clientws = new IetClient(_authSettings.IamKey);
+            var peopleResult = await clientws.People.Get(iamId);
+            if (peopleResult.ResponseData.Results.Length > 0)
+            {
+                searchResult.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
+            }
         }
 
         private async Task<SearchResult> LookupEmail(string email)
@@ -226,6 +245,8 @@ namespace PeopleLookup.Mvc.Services
                 return searchResult;
             }
 
+
+
             var email = ucdContactResult.ResponseData.Results.First().Email ?? ucdContactResult.ResponseData.Results.First().CampusEmail;
             PopulateSearchResult(searchResult, ucdKerbPerson, email);
 
@@ -250,6 +271,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.PpsId = kerbResult.PpsId;
             searchResult.StudentId = kerbResult.StudentId;
             searchResult.BannerPidm = kerbResult.BannerPidm;
+            searchResult.EmployeeId = kerbResult.EmployeeId;
         }
     }
 }

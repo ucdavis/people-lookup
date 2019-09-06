@@ -47,6 +47,7 @@ namespace PeopleLookup.Mvc.Models
         public string PpsId { get; set; }
         public string StudentId { get; set;}
         public string BannerPidm { get; set; }
+        public string EmployeeId { get; set; }
 
         public string Title { get; set; }
 
@@ -55,6 +56,7 @@ namespace PeopleLookup.Mvc.Models
             StudentId = null;
             BannerPidm = null;
             PpsId = null;
+            EmployeeId = null;
         }
 
         public string ExpandedAffiliation

@@ -64,7 +64,22 @@ namespace PeopleLookup.Mvc.Services
             var ucdContactResult = await clientws.Contacts.Get(iamId);
             if (ucdContactResult.ResponseData.Results.Length == 0)
             {
-                return null;
+                // No contact details
+                var kerbResult = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+                if (kerbResult.ResponseData.Results.Length > 0)
+                {
+                    var kerbPerson = kerbResult.ResponseData.Results.First();
+                    kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
+                    PopulateSearchResult(searchResult, kerbPerson, null);
+                }
+                else
+                {
+                    var person = peopleResult.ResponseData.Results.First();
+                    PopulatePartialSearchResult(searchResult, person);
+                }
+
+                searchResult.ErrorMessage = "No Contact details";
+                return searchResult;
             }
 
             // return info for the user identified by this IAM 
@@ -261,6 +276,25 @@ namespace PeopleLookup.Mvc.Services
             searchResult.KerbId = kerbResult.UserId;
             searchResult.IamId = kerbResult.IamId;
             searchResult.Email = email;
+            searchResult.FullName = kerbResult.FullName;
+            searchResult.IsEmployee = kerbResult.IsEmployee;
+            searchResult.IsFaculty = kerbResult.IsFaculty;
+            searchResult.IsStudent = kerbResult.IsStudent;
+            searchResult.IsHSEmployee = kerbResult.IsHSEmployee;
+            searchResult.IsExternal = kerbResult.IsExternal;
+            searchResult.IsStaff = kerbResult.IsStaff;
+            searchResult.PpsId = kerbResult.PpsId;
+            searchResult.StudentId = kerbResult.StudentId;
+            searchResult.BannerPidm = kerbResult.BannerPidm;
+            searchResult.EmployeeId = kerbResult.EmployeeId;
+        }
+
+        private void PopulatePartialSearchResult(SearchResult searchResult, PeopleResult kerbResult)
+        {
+            searchResult.Found = true;
+            searchResult.KerbId = null;
+            searchResult.IamId = kerbResult.IamId;
+            searchResult.Email = null;
             searchResult.FullName = kerbResult.FullName;
             searchResult.IsEmployee = kerbResult.IsEmployee;
             searchResult.IsFaculty = kerbResult.IsFaculty;

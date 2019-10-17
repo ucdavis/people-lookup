@@ -107,6 +107,15 @@ namespace PeopleLookup.Mvc.Services
                 kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
                 PopulateSearchResult(searchResult, kerbPerson, ucdContactResult.ResponseData.Results.First().Email);
             }
+            else
+            {
+                if (ucdContactResult.ResponseData.Results.Length > 0)
+                {
+                    var person = peopleResult.ResponseData.Results.First();
+                    PopulatePartialSearchResult(searchResult, person);
+                    searchResult.ErrorMessage = "Kerb Not Found";
+                }
+            }
             if (searchResult.Found)
             {
                 await LookupAssociations(searchResult.IamId, searchResult);

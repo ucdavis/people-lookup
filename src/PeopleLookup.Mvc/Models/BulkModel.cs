@@ -29,7 +29,7 @@ namespace PeopleLookup.Mvc.Models
         [Display(Name = "Bulk IAM Ids")]
         public string BulkIamIds { get; set; }
 
-        [Display(Name = "Bulk Lastnames")]
+        [Display(Name = "Bulk Last Names")]
         public string BulkLastnames { get; set; }
 
         public IList<SearchResult> Results { get; set; }

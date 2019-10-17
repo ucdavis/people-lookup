@@ -26,6 +26,9 @@ namespace PeopleLookup.Mvc.Models
         [Display(Name = "Bulk PPS Ids")]
         public string BulkPpsIds { get; set; }
 
+        [Display(Name = "Bulk IAM Ids")]
+        public string BulkIamIds { get; set; }
+
         public IList<SearchResult> Results { get; set; }
     }
 

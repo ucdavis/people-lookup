@@ -14,6 +14,7 @@ namespace PeopleLookup.Mvc.Services
         Task<SearchResult> Lookup(string search);
         Task<SearchResult> LookupId(PeopleSearchField searchField, string search);
         Task<User> GetByKerberos(string kerb);
+        Task<SearchResult[]> LookupLastName(string search);
     }
 
     public class IdentityService : IIdentityService
@@ -43,6 +44,22 @@ namespace PeopleLookup.Mvc.Services
             }
 
             return searchResult;
+        }
+
+        public async Task<SearchResult[]> LookupLastName(string search)
+        {
+            var rtValue = new List<SearchResult>();
+            var clientws = new IetClient(_authSettings.IamKey);
+            var peopleResult = await clientws.People.Search(PeopleSearchField.dLastName, search);
+            var iamIds = peopleResult.ResponseData.Results.Select(a => a.IamId).Distinct().ToArray();
+            foreach (var iamId in iamIds)
+            {
+                var sr = await LookupId(PeopleSearchField.iamId, iamId);
+                sr.SearchValue = search;
+                rtValue.Add(sr);
+            }
+
+            return rtValue.ToArray();
         }
 
         public async Task<SearchResult> LookupId(PeopleSearchField searchField, string search)
@@ -150,6 +167,8 @@ namespace PeopleLookup.Mvc.Services
 
             return rtValue;
         }
+
+
 
         private User CreateUser(string email, KerberosResult ucdKerbPerson, string iamId)
         {

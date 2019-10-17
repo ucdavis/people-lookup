@@ -38,10 +38,16 @@ namespace PeopleLookup.Mvc.Controllers
             const string regexKerbPattern = @"\b[A-Z0-9]{2,10}\b";
             const string regexStudentIdPattern = @"\b[0-9]{2,10}\b";
             const string regexPpsIdPattern = @"\b[0-9]{2,10}\b"; //Based off StudentId???
-            const string regexIamIdPattern = @"\b[0-9]{2,10}\b"; 
+            const string regexIamIdPattern = @"\b[0-9]{2,10}\b";
+            const string regexLastNamePattern = @"\b[A-Z0-9]{2,50}\b";
 
             model.Results = new List<SearchResult>();
-            if (string.IsNullOrWhiteSpace(model.BulkEmail) && string.IsNullOrWhiteSpace(model.BulkKerb) && string.IsNullOrWhiteSpace(model.BulkStudentIds) && string.IsNullOrWhiteSpace(model.BulkPpsIds) && string.IsNullOrWhiteSpace(model.BulkIamIds))
+            if (string.IsNullOrWhiteSpace(model.BulkEmail) 
+                && string.IsNullOrWhiteSpace(model.BulkKerb) 
+                && string.IsNullOrWhiteSpace(model.BulkStudentIds) 
+                && string.IsNullOrWhiteSpace(model.BulkPpsIds) 
+                && string.IsNullOrWhiteSpace(model.BulkIamIds)
+                && string.IsNullOrWhiteSpace(model.BulkLastnames))
             {
                 ErrorMessage = "You must select something to search";
                 return View(model);
@@ -89,6 +95,29 @@ namespace PeopleLookup.Mvc.Controllers
                     var result = await _identityService.LookupId(PeopleSearchField.iamId, match.ToString());
 
                     model.Results.Add(result);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.BulkLastnames))
+            {
+                matches = System.Text.RegularExpressions.Regex.Matches(model.BulkLastnames, regexLastNamePattern,
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                foreach (var match in matches)
+                {
+                    var results = await _identityService.LookupLastName(match.ToString());
+                    foreach (var searchResult in results)
+                    {
+                        model.Results.Add(searchResult);
+                    }
+
+                    if (results.Length <= 1)
+                    {
+                        model.Results.Add(new SearchResult
+                        {
+                            SearchValue = match.ToString(),
+                            Found = false
+                        });
+                    }
                 }
             }
 

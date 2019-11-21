@@ -55,7 +55,6 @@ namespace PeopleLookup.Mvc
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.CasServerUrlBase = Configuration["Authentication:CasBaseUrl"];
                 options.Events.OnTicketReceived = async context => { 
-                    var c = context;
 
                     var identity = (ClaimsIdentity) context.Principal.Identity;
 

@@ -27,20 +27,28 @@ namespace PeopleLookup.Mvc.Services
 
         public async Task<SearchResult> Lookup(string search)
         {
-            SearchResult searchResult = null;
-            if (search.Contains("@"))
+            SearchResult searchResult = new SearchResult(); ;
+            try
             {
-                searchResult = await LookupEmail(search);
-            }
-            else
-            {
-                searchResult = await LookupKerb(search);
-            }
+                if (search.Contains("@"))
+                {
+                    searchResult = await LookupEmail(search);
+                }
+                else
+                {
+                    searchResult = await LookupKerb(search);
+                }
 
-            if (searchResult.Found)
+                if (searchResult.Found)
+                {
+                    await LookupAssociations(searchResult.IamId, searchResult);
+                    await LookupEmployeeId(searchResult.IamId, searchResult);
+                }
+            }
+            catch (Exception)
             {
-                await LookupAssociations(searchResult.IamId, searchResult);
-                await LookupEmployeeId(searchResult.IamId, searchResult);
+                searchResult.SearchValue = search;
+                searchResult.ErrorMessage = "Error Occurred";
             }
 
             return searchResult;

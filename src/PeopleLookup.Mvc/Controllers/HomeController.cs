@@ -138,11 +138,12 @@ namespace PeopleLookup.Mvc.Controllers
                 {
                     matches = System.Text.RegularExpressions.Regex.Matches(model.BulkStudentIds, regexStudentIdPattern,
                         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                    foreach (var match in matches)
-                    {
-                        var result = await _identityService.LookupId(PeopleSearchField.studentId, match.ToString());
 
-                        model.Results.Add(result);
+                    var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.studentId, a.ToString())).ToArray();
+                    var tempResults = await Task.WhenAll(results);
+                    foreach (var tempResult in tempResults)
+                    {
+                        model.Results.Add(tempResult);
                     }
                 }
 
@@ -150,11 +151,12 @@ namespace PeopleLookup.Mvc.Controllers
                 {
                     matches = System.Text.RegularExpressions.Regex.Matches(model.BulkPpsIds, regexPpsIdPattern,
                         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                    foreach (var match in matches)
-                    {
-                        var result = await _identityService.LookupId(PeopleSearchField.ppsId, match.ToString());
 
-                        model.Results.Add(result);
+                    var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.ppsId, a.ToString())).ToArray();
+                    var tempResults = await Task.WhenAll(results);
+                    foreach (var tempResult in tempResults)
+                    {
+                        model.Results.Add(tempResult);
                     }
                 }
             }

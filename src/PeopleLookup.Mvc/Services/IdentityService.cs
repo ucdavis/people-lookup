@@ -27,20 +27,28 @@ namespace PeopleLookup.Mvc.Services
 
         public async Task<SearchResult> Lookup(string search)
         {
-            SearchResult searchResult = null;
-            if (search.Contains("@"))
+            SearchResult searchResult = new SearchResult(); ;
+            try
             {
-                searchResult = await LookupEmail(search);
-            }
-            else
-            {
-                searchResult = await LookupKerb(search);
-            }
+                if (search.Contains("@"))
+                {
+                    searchResult = await LookupEmail(search);
+                }
+                else
+                {
+                    searchResult = await LookupKerb(search);
+                }
 
-            if (searchResult.Found)
+                if (searchResult.Found)
+                {
+                    await LookupAssociations(searchResult.IamId, searchResult);
+                    await LookupEmployeeId(searchResult.IamId, searchResult);
+                }
+            }
+            catch (Exception)
             {
-                await LookupAssociations(searchResult.IamId, searchResult);
-                await LookupEmployeeId(searchResult.IamId, searchResult);
+                searchResult.SearchValue = search;
+                searchResult.ErrorMessage = "Error Occurred";
             }
 
             return searchResult;
@@ -49,15 +57,34 @@ namespace PeopleLookup.Mvc.Services
         public async Task<SearchResult[]> LookupLastName(string search)
         {
             var rtValue = new List<SearchResult>();
-            var clientws = new IetClient(_authSettings.IamKey);
-            var peopleResult = await clientws.People.Search(PeopleSearchField.dLastName, search);
-            var iamIds = peopleResult.ResponseData.Results.Select(a => a.IamId).Distinct().ToArray();
-            foreach (var iamId in iamIds)
+            try
             {
-                var sr = await LookupId(PeopleSearchField.iamId, iamId);
-                sr.SearchValue = search;
-                rtValue.Add(sr);
+                var clientws = new IetClient(_authSettings.IamKey);
+                var peopleResult = await clientws.People.Search(PeopleSearchField.dLastName, search);
+                var iamIds = peopleResult.ResponseData.Results.Select(a => a.IamId).Distinct().ToArray();
+                var results = iamIds.Select(a => LookupId(PeopleSearchField.iamId, a)).ToArray(); //These have their own try catch
+                var tempResults = await Task.WhenAll(results);
+                if (tempResults.Length <= 0)
+                {
+                    var sr = new SearchResult();
+                    sr.SearchValue = search;
+                    sr.Found = false;
+                    rtValue.Add(sr);
+                }
+                foreach (var result in tempResults)
+                {
+                    result.SearchValue = search;
+                    rtValue.Add(result);
+                }
             }
+            catch (Exception)
+            {
+                SearchResult searchResult = new SearchResult();
+                searchResult.SearchValue = search;
+                searchResult.ErrorMessage = "Error Occurred";
+                rtValue.Add(searchResult);
+            }
+
 
             return rtValue.ToArray();
         }
@@ -66,61 +93,70 @@ namespace PeopleLookup.Mvc.Services
         {
             var searchResult = new SearchResult();
             searchResult.SearchValue = search;
-
-            var clientws = new IetClient(_authSettings.IamKey);
-            var peopleResult = await clientws.People.Search(searchField, search);
-            var iamId = peopleResult.ResponseData.Results.Length > 0
-                ? peopleResult.ResponseData.Results[0].IamId
-                : string.Empty;
-            if (string.IsNullOrWhiteSpace(iamId))
+            try
             {
-                return searchResult;
-            }
-
-            // find their email
-            var ucdContactResult = await clientws.Contacts.Get(iamId);
-            if (ucdContactResult.ResponseData.Results.Length == 0)
-            {
-                // No contact details
-                var kerbResult = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
-                if (kerbResult.ResponseData.Results.Length > 0)
+                var clientws = new IetClient(_authSettings.IamKey);
+                var peopleResult = await clientws.People.Search(searchField, search);
+                var iamId = peopleResult.ResponseData.Results.Length > 0
+                    ? peopleResult.ResponseData.Results[0].IamId
+                    : string.Empty;
+                if (string.IsNullOrWhiteSpace(iamId))
                 {
-                    var kerbPerson = kerbResult.ResponseData.Results.First();
+                    return searchResult;
+                }
+
+                // find their email
+                var ucdContactResult = await clientws.Contacts.Get(iamId);
+                if (ucdContactResult.ResponseData.Results.Length == 0)
+                {
+                    // No contact details
+                    var kerbResult = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+                    if (kerbResult.ResponseData.Results.Length > 0)
+                    {
+                        var kerbPerson = kerbResult.ResponseData.Results.First();
+                        kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
+                        PopulateSearchResult(searchResult, kerbPerson, null);
+                    }
+                    else
+                    {
+                        var person = peopleResult.ResponseData.Results.First();
+                        PopulatePartialSearchResult(searchResult, person);
+                    }
+
+                    searchResult.ErrorMessage = "No Contact details";
+                    return searchResult;
+                }
+
+                // return info for the user identified by this IAM 
+                var result = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+                if (result.ResponseData.Results.Length > 0)
+                {
+                    var kerbPerson = result.ResponseData.Results.First();
                     kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
-                    PopulateSearchResult(searchResult, kerbPerson, null);
+                    PopulateSearchResult(searchResult, kerbPerson, ucdContactResult.ResponseData.Results.First().Email);
                 }
                 else
                 {
-                    var person = peopleResult.ResponseData.Results.First();
-                    PopulatePartialSearchResult(searchResult, person);
+                    if (ucdContactResult.ResponseData.Results.Length > 0)
+                    {
+                        var person = peopleResult.ResponseData.Results.First();
+                        PopulatePartialSearchResult(searchResult, person);
+                        searchResult.ErrorMessage = "Kerb Not Found";
+                    }
                 }
 
-                searchResult.ErrorMessage = "No Contact details";
-                return searchResult;
-            }
-
-            // return info for the user identified by this IAM 
-            var result = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
-            if (result.ResponseData.Results.Length > 0)
-            {
-                var kerbPerson = result.ResponseData.Results.First();
-                kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
-                PopulateSearchResult(searchResult, kerbPerson, ucdContactResult.ResponseData.Results.First().Email);
-            }
-            else
-            {
-                if (ucdContactResult.ResponseData.Results.Length > 0)
+                if (searchResult.Found)
                 {
-                    var person = peopleResult.ResponseData.Results.First();
-                    PopulatePartialSearchResult(searchResult, person);
-                    searchResult.ErrorMessage = "Kerb Not Found";
+                    await LookupAssociations(searchResult.IamId, searchResult);
+                    await LookupEmployeeId(searchResult.IamId,
+                        searchResult); //Shouldn't need it as it should be in the if above
                 }
             }
-            if (searchResult.Found)
+            catch (Exception)
             {
-                await LookupAssociations(searchResult.IamId, searchResult);
-                await LookupEmployeeId(searchResult.IamId, searchResult); //Shouldn't need it as it should be in the if above
+                searchResult.ErrorMessage = "Error Occurred";
             }
+
             return searchResult;
         }
 

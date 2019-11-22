@@ -96,11 +96,16 @@ namespace PeopleLookup.Mvc.Controllers
             {
                 matches = System.Text.RegularExpressions.Regex.Matches(model.BulkIamIds, regexIamIdPattern,
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                foreach (var match in matches)
+                var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.iamId,a.ToString())).ToArray();
+                var tempResults = await Task.WhenAll(results);
+                foreach (var tempResult in tempResults)
                 {
-                    var result = await _identityService.LookupId(PeopleSearchField.iamId, match.ToString());
-
-                    model.Results.Add(result);
+                    //I could change this to AddRange if I move the AllowSensitive to the lookup service and change it to a List from IList.
+                    if (!allowSensitiveInfo) //Was missing?
+                    {
+                        tempResult.HideSensitiveFields();
+                    }
+                    model.Results.Add(tempResult);
                 }
             }
 
@@ -108,22 +113,22 @@ namespace PeopleLookup.Mvc.Controllers
             {
                 matches = System.Text.RegularExpressions.Regex.Matches(model.BulkLastnames, regexLastNamePattern,
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                foreach (var match in matches)
+
+                var results = matches.Select(a => _identityService.LookupLastName(a.ToString())).ToArray();
+                var tempResults = await Task.WhenAll(results);
+                foreach (var tempResult in tempResults)
                 {
-                    var results = await _identityService.LookupLastName(match.ToString());
-                    foreach (var searchResult in results)
+                    foreach (var result in tempResult)
                     {
-                        model.Results.Add(searchResult);
+                        //I could change this to AddRange if I move the AllowSensitive to the lookup service and change it to a List from IList.
+                        if (!allowSensitiveInfo) //Was missing?
+                        {
+                            result.HideSensitiveFields();
+                        }
+
+                        model.Results.Add(result);
                     }
 
-                    if (results.Length <= 1)
-                    {
-                        model.Results.Add(new SearchResult
-                        {
-                            SearchValue = match.ToString(),
-                            Found = false
-                        });
-                    }
                 }
             }
 

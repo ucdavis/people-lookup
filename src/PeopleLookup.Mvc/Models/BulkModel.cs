@@ -56,13 +56,14 @@ namespace PeopleLookup.Mvc.Models
         public string EmployeeId { get; set; }
 
         public string Title { get; set; }
-
+        
         public void HideSensitiveFields()
         {
             StudentId = null;
             BannerPidm = null;
             PpsId = null;
             EmployeeId = null;
+            ExceptionMessage = null;
         }
 
         public string ExpandedAffiliation
@@ -93,5 +94,7 @@ namespace PeopleLookup.Mvc.Models
 
 
         public string ErrorMessage { get; set; }
+
+        public string ExceptionMessage { get; set; }
     }
 }

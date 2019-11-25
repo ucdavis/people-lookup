@@ -45,10 +45,11 @@ namespace PeopleLookup.Mvc.Services
                     await LookupEmployeeId(searchResult.IamId, searchResult);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 searchResult.SearchValue = search;
                 searchResult.ErrorMessage = "Error Occurred";
+                searchResult.ExceptionMessage = $"Error: {e.Message} Inner: {e.InnerException?.Message}";
             }
 
             return searchResult;
@@ -77,11 +78,12 @@ namespace PeopleLookup.Mvc.Services
                     rtValue.Add(result);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 SearchResult searchResult = new SearchResult();
                 searchResult.SearchValue = search;
                 searchResult.ErrorMessage = "Error Occurred";
+                searchResult.ExceptionMessage = $"Error: {e.Message} Inner: {e.InnerException?.Message}";
                 rtValue.Add(searchResult);
             }
 
@@ -152,9 +154,10 @@ namespace PeopleLookup.Mvc.Services
                         searchResult); //Shouldn't need it as it should be in the if above
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 searchResult.ErrorMessage = "Error Occurred";
+                searchResult.ExceptionMessage = $"Error: {e.Message} Inner: {e.InnerException?.Message}";
             }
 
             return searchResult;

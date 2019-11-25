@@ -39,6 +39,7 @@ namespace PeopleLookup.Mvc.Services
                     searchResult = await LookupKerb(search);
                 }
 
+
                 if (searchResult.Found)
                 {
                     await LookupAssociations(searchResult.IamId, searchResult);
@@ -49,7 +50,7 @@ namespace PeopleLookup.Mvc.Services
             {
                 searchResult.SearchValue = search;
                 searchResult.ErrorMessage = "Error Occurred";
-                searchResult.ExceptionMessage = $"Error: {e.Message} Inner: {e.InnerException?.Message}";
+                searchResult.ExceptionMessage = $"(Lookup) Error: {e.Message} Inner: {e.InnerException?.Message} {e}";
             }
 
             return searchResult;
@@ -83,7 +84,7 @@ namespace PeopleLookup.Mvc.Services
                 SearchResult searchResult = new SearchResult();
                 searchResult.SearchValue = search;
                 searchResult.ErrorMessage = "Error Occurred";
-                searchResult.ExceptionMessage = $"Error: {e.Message} Inner: {e.InnerException?.Message}";
+                searchResult.ExceptionMessage = $"(LookupLastName) Error: {e.Message} Inner: {e.InnerException?.Message} {e}";
                 rtValue.Add(searchResult);
             }
 
@@ -157,7 +158,7 @@ namespace PeopleLookup.Mvc.Services
             catch (Exception e)
             {
                 searchResult.ErrorMessage = "Error Occurred";
-                searchResult.ExceptionMessage = $"Error: {e.Message} Inner: {e.InnerException?.Message}";
+                searchResult.ExceptionMessage = $"(LookupId) Error: {e.Message} Inner: {e.InnerException?.Message} {e}";
             }
 
             return searchResult;

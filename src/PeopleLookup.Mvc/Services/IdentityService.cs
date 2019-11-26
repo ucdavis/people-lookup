@@ -20,9 +20,11 @@ namespace PeopleLookup.Mvc.Services
     public class IdentityService : IIdentityService
     {
         private readonly AuthSettings _authSettings;
+        private readonly IetClient _clientws;
         public IdentityService(IOptions<AuthSettings> authSettings)
         {
             _authSettings = authSettings.Value;
+            _clientws = new IetClient(_authSettings.IamKey);
         }
 
         public async Task<SearchResult> Lookup(string search)
@@ -61,8 +63,8 @@ namespace PeopleLookup.Mvc.Services
             var rtValue = new List<SearchResult>();
             try
             {
-                var clientws = new IetClient(_authSettings.IamKey);
-                var peopleResult = await clientws.People.Search(PeopleSearchField.dLastName, search);
+                //var clientws = new IetClient(_authSettings.IamKey);
+                var peopleResult = await _clientws.People.Search(PeopleSearchField.dLastName, search);
                 var iamIds = peopleResult.ResponseData.Results.Select(a => a.IamId).Distinct().ToArray();
                 var results = iamIds.Select(a => LookupId(PeopleSearchField.iamId, a)).ToArray(); //These have their own try catch
                 var tempResults = await Task.WhenAll(results);
@@ -98,8 +100,8 @@ namespace PeopleLookup.Mvc.Services
             searchResult.SearchValue = search;
             try
             {
-                var clientws = new IetClient(_authSettings.IamKey);
-                var peopleResult = await clientws.People.Search(searchField, search);
+                //var clientws = new IetClient(_authSettings.IamKey);
+                var peopleResult = await _clientws.People.Search(searchField, search);
                 var iamId = peopleResult.ResponseData.Results.Length > 0
                     ? peopleResult.ResponseData.Results[0].IamId
                     : string.Empty;
@@ -109,11 +111,11 @@ namespace PeopleLookup.Mvc.Services
                 }
 
                 // find their email
-                var ucdContactResult = await clientws.Contacts.Get(iamId);
+                var ucdContactResult = await _clientws.Contacts.Get(iamId);
                 if (ucdContactResult.ResponseData.Results.Length == 0)
                 {
                     // No contact details
-                    var kerbResult = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+                    var kerbResult = await _clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
                     if (kerbResult.ResponseData.Results.Length > 0)
                     {
                         var kerbPerson = kerbResult.ResponseData.Results.First();
@@ -131,7 +133,7 @@ namespace PeopleLookup.Mvc.Services
                 }
 
                 // return info for the user identified by this IAM 
-                var result = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+                var result = await _clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
                 if (result.ResponseData.Results.Length > 0)
                 {
                     var kerbPerson = result.ResponseData.Results.First();
@@ -167,8 +169,8 @@ namespace PeopleLookup.Mvc.Services
         //Just used for logging in.
         public async Task<User> GetByKerberos(string kerb)
         {
-            var clientws = new IetClient(_authSettings.IamKey);
-            var ucdKerbResult = await clientws.Kerberos.Search(KerberosSearchField.userId, kerb);
+            //var clientws = new IetClient(_authSettings.IamKey);
+            var ucdKerbResult = await _clientws.Kerberos.Search(KerberosSearchField.userId, kerb);
 
             if (ucdKerbResult.ResponseData.Results.Length == 0)
             {
@@ -188,7 +190,7 @@ namespace PeopleLookup.Mvc.Services
             var ucdKerbPerson = ucdKerbResult.ResponseData.Results.First();
 
             // find their email
-            var ucdContactResult = await clientws.Contacts.Get(ucdKerbPerson.IamId);
+            var ucdContactResult = await _clientws.Contacts.Get(ucdKerbPerson.IamId);
 
             if(ucdContactResult.ResponseData.Results.Length == 0)
             {
@@ -234,9 +236,9 @@ namespace PeopleLookup.Mvc.Services
 
         private async Task LookupAssociations(string iamId, SearchResult searchResult)
         {
-            var clientws = new IetClient(_authSettings.IamKey);
+            //var clientws = new IetClient(_authSettings.IamKey);
 
-            var result = await clientws.PPSAssociations.Search(PPSAssociationsSearchField.iamId, iamId);
+            var result = await _clientws.PPSAssociations.Search(PPSAssociationsSearchField.iamId, iamId);
             if (result.ResponseData.Results.Length > 0)
             {
                 var depts = new List<string>();
@@ -259,8 +261,8 @@ namespace PeopleLookup.Mvc.Services
                 //Already got it
                 return;
             }
-            var clientws = new IetClient(_authSettings.IamKey);
-            var peopleResult = await clientws.People.Get(iamId);
+            //var clientws = new IetClient(_authSettings.IamKey);
+            var peopleResult = await _clientws.People.Get(iamId);
             if (peopleResult.ResponseData.Results.Length > 0)
             {
                 searchResult.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
@@ -272,8 +274,8 @@ namespace PeopleLookup.Mvc.Services
             var searchResult = new SearchResult();
             searchResult.SearchValue = email;
 
-            var clientws = new IetClient(_authSettings.IamKey);
-            var iamResult = await clientws.Contacts.Search(ContactSearchField.email, email);
+            //var clientws = new IetClient(_authSettings.IamKey);
+            var iamResult = await _clientws.Contacts.Search(ContactSearchField.email, email);
             var iamId = iamResult.ResponseData.Results.Length > 0
                 ? iamResult.ResponseData.Results[0].IamId
                 : string.Empty;
@@ -282,7 +284,7 @@ namespace PeopleLookup.Mvc.Services
                 return searchResult;
             }
             // return info for the user identified by this IAM 
-            var result = await clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
+            var result = await _clientws.Kerberos.Search(KerberosSearchField.iamId, iamId);
             if (result.ResponseData.Results.Length > 0)
             {
                 var kerbPerson = result.ResponseData.Results.First();
@@ -298,8 +300,8 @@ namespace PeopleLookup.Mvc.Services
         {
             var searchResult = new SearchResult();
             searchResult.SearchValue = kerb;
-            var clientws = new IetClient(_authSettings.IamKey);
-            var ucdKerbResult = await clientws.Kerberos.Search(KerberosSearchField.userId, kerb);
+            //var clientws = new IetClient(_authSettings.IamKey);
+            var ucdKerbResult = await _clientws.Kerberos.Search(KerberosSearchField.userId, kerb);
 
             if (ucdKerbResult.ResponseData.Results.Length == 0)
             {
@@ -320,7 +322,7 @@ namespace PeopleLookup.Mvc.Services
 
             var ucdKerbPerson = ucdKerbResult.ResponseData.Results.First();
             // find their email
-            var ucdContactResult = await clientws.Contacts.Get(ucdKerbPerson.IamId);
+            var ucdContactResult = await _clientws.Contacts.Get(ucdKerbPerson.IamId);
 
             if (ucdContactResult.ResponseData.Results.Length == 0)
             {

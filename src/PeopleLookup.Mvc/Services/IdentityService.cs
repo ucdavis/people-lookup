@@ -22,8 +22,10 @@ namespace PeopleLookup.Mvc.Services
     {
         private readonly AuthSettings _authSettings;
         private readonly IetClient _clientws;
-        public IdentityService(IOptions<AuthSettings> authSettings, HttpClient httpClient)
+        public IdentityService(IOptions<AuthSettings> authSettings, IHttpClientFactory httpClientFactory)
         {
+            var httpClient = httpClientFactory.CreateClient("identity");
+
             _authSettings = authSettings.Value;
             _clientws = new IetClient(httpClient, _authSettings.IamKey);
         }

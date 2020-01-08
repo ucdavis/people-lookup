@@ -38,6 +38,7 @@ namespace PeopleLookup.Mvc
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddHttpClient("identity");
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IPermissionService, PermissionService>();

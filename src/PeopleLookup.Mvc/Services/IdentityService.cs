@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Ietws;
 using Microsoft.Extensions.Options;
@@ -21,10 +22,12 @@ namespace PeopleLookup.Mvc.Services
     {
         private readonly AuthSettings _authSettings;
         private readonly IetClient _clientws;
-        public IdentityService(IOptions<AuthSettings> authSettings)
+        public IdentityService(IOptions<AuthSettings> authSettings, IHttpClientFactory httpClientFactory)
         {
+            var httpClient = httpClientFactory.CreateClient("identity");
+
             _authSettings = authSettings.Value;
-            _clientws = new IetClient(_authSettings.IamKey);
+            _clientws = new IetClient(httpClient, _authSettings.IamKey);
         }
 
         public async Task<SearchResult> Lookup(string search)

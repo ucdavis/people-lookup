@@ -19,13 +19,15 @@ namespace PeopleLookup.Mvc.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET: api/Iamws/PPSAssociation/xxxxxx/1000012183
-        [HttpGet("PPSAssociation/{key}/{id}", Name = "GetPPSAssociation")]
-        public async Task<PPSAssociationResults> GetPPSAssociation(string key, string id)
+        // GET: http://localhost:53259/api/Iamws/PPSAssociation/xxxx/iamId/default/1000012183
+        [HttpGet("PPSAssociation/{key}/{search}/{retType}/{id}", Name = "GetPPSAssociation")]
+        public async Task<PPSAssociationResults> GetPPSAssociation(string key, PPSAssociationsSearchField search, string retType, string id)
         {
             var clientws = new IetClient(key);
+            
 
-            var result = await clientws.PPSAssociations.Search(PPSAssociationsSearchField.iamId, id);
+            var result = await clientws.PPSAssociations.Search(search, id, retType);
+
             //if (result.ResponseData.Results.Length > 0)
             //{
             //    var depts = new List<string>();

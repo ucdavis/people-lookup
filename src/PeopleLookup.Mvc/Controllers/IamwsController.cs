@@ -19,32 +19,20 @@ namespace PeopleLookup.Mvc.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET: http://localhost:53259/api/Iamws/PPSAssociation/?key=123&field=iamId&fieldValue=123
-        [HttpGet("PPSAssociation", Name = "GetPPSAssociation")]
-        public async Task<PPSAssociationResults> GetPPSAssociation(string key, PPSAssociationsSearchField field, string fieldValue)
-        {
-            var clientws = new IetClient(key);
-            
-
-            var result = await clientws.PPSAssociations.Search(field, fieldValue);
-
-
-            return result;
-
-   
-        }
 
         // GET: http://localhost:53259/api/Iamws/PPSAssociation2/?key=123&field=iamId&fieldValue=123&retType=people
-        [HttpGet("PPSAssociation2", Name = "GetPPSAssociation2")]
-        public async Task<PeopleResults> GetPPSAssociation(string key, PPSAssociationsSearchField field, string fieldValue, string retType)
+        [HttpGet("PPSAssociation", Name = "GetPPSAssociation")]
+        public async Task<object> GetPPSAssociation(string key, PPSAssociationsSearchField field, string fieldValue, string retType)
         {
             var clientws = new IetClient(key);
 
+            if (retType.Equals("people", StringComparison.OrdinalIgnoreCase))
+            {
+                return await clientws.PPSAssociations.Search<PeopleResults>(field, fieldValue, retType);
+            }
 
-            var result = await clientws.PPSAssociations.Search<PeopleResults>(field, fieldValue, retType);
 
-
-            return result;
+            return await clientws.PPSAssociations.Search(field, fieldValue);
 
 
         }

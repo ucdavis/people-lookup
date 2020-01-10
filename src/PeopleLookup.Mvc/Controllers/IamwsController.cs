@@ -20,7 +20,7 @@ namespace PeopleLookup.Mvc.Controllers
         }
 
 
-        // GET: http://localhost:53259/api/Iamws/PPSAssociation2/?key=123&field=iamId&fieldValue=123&retType=people
+        // GET: http://localhost:53259/api/Iamws/PPSAssociation2/?key=123&field=iamId&fieldValue=123
         [HttpGet("PPSAssociation", Name = "GetPPSAssociation")]
         public async Task<IActionResult> GetPPSAssociation(string key, PPSAssociationsSearchField field, string fieldValue, string retType="default")
         {
@@ -28,7 +28,7 @@ namespace PeopleLookup.Mvc.Controllers
 
             if (retType.Equals("people", StringComparison.OrdinalIgnoreCase))
             {
-                return Ok(await clientws.PPSAssociations.Search<PeopleResults>(field, fieldValue, retType));
+                return Ok(await clientws.PPSAssociations.Search<PeopleResults>(field, fieldValue, "people"));
             }
 
 

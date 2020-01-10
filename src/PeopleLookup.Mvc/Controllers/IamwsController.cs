@@ -22,17 +22,17 @@ namespace PeopleLookup.Mvc.Controllers
 
         // GET: http://localhost:53259/api/Iamws/PPSAssociation2/?key=123&field=iamId&fieldValue=123&retType=people
         [HttpGet("PPSAssociation", Name = "GetPPSAssociation")]
-        public async Task<object> GetPPSAssociation(string key, PPSAssociationsSearchField field, string fieldValue, string retType="default")
+        public async Task<IActionResult> GetPPSAssociation(string key, PPSAssociationsSearchField field, string fieldValue, string retType="default")
         {
             var clientws = new IetClient(key);
 
             if (retType.Equals("people", StringComparison.OrdinalIgnoreCase))
             {
-                return await clientws.PPSAssociations.Search<PeopleResults>(field, fieldValue, retType);
+                return Ok(await clientws.PPSAssociations.Search<PeopleResults>(field, fieldValue, retType));
             }
 
 
-            return await clientws.PPSAssociations.Search(field, fieldValue);
+            return Ok(await clientws.PPSAssociations.Search(field, fieldValue));
 
 
         }

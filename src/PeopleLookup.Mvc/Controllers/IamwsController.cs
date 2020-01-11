@@ -20,7 +20,7 @@ namespace PeopleLookup.Mvc.Controllers
         }
 
 
-        // GET: http://localhost:53259/api/Iamws/PPSAssociation2/?key=123&field=iamId&fieldValue=123
+        // GET: http://localhost:53259/api/Iamws/PPSAssociation/?key=123&field=iamId&fieldValue=123
         [HttpGet("PPSAssociation", Name = "GetPPSAssociation")]
         public async Task<IActionResult> GetPPSAssociation(string key, PPSAssociationsSearchField field, string fieldValue, string retType="default")
         {
@@ -37,15 +37,14 @@ namespace PeopleLookup.Mvc.Controllers
 
         }
 
-        [HttpGet("Contact/{key}/{id}", Name = "GetContact")]
-        public async Task<ContactResults> GetContacts(string key, string id)
+        //Get: /api/Iamws/Contact/?key=123&id=123
+        [HttpGet("Contact", Name = "GetContact")]
+        public async Task<IActionResult> GetContacts(string key, string id)
         {
             var clientws = new IetClient(key);
 
-            var result = await clientws.Contacts.Get(id);
+            return Ok( await clientws.Contacts.Get(id));
 
-
-            return result;
 
 
         }

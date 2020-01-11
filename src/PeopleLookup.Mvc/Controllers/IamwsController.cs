@@ -37,8 +37,8 @@ namespace PeopleLookup.Mvc.Controllers
 
         }
 
-        //Get: /api/Iamws/Contact/?key=123&id=123
-        [HttpGet("Contact", Name = "GetContact")]
+        //Get: http://localhost:53259/api/Iamws/Contact/1000012183/?key=xxx
+        [HttpGet("Contact/{id}", Name = "GetContact")]
         public async Task<IActionResult> GetContacts(string key, string id)
         {
             var clientws = new IetClient(key);

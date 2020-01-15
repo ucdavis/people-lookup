@@ -40,7 +40,7 @@ namespace PeopleLookup.Mvc.Controllers
             const string regexStudentIdPattern = @"\b[0-9]{2,10}\b";
             const string regexPpsIdPattern = @"\b[0-9]{2,10}\b"; //Based off StudentId???
             const string regexIamIdPattern = @"\b[0-9]{2,10}\b";
-            const string regexLastNamePattern = @"\b[A-Z0-9]{2,50}\b";
+            const string regexLastNamePattern = @"\b[A-Z0-9\-]{2,50}\b";
 
             model.Results = new List<SearchResult>();
             if (string.IsNullOrWhiteSpace(model.BulkEmail) 

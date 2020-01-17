@@ -11,6 +11,7 @@ using PeopleLookup.Mvc.Models;
 
 namespace PeopleLookup.Mvc.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AccountController : Controller
     {
         private readonly AuthSettings _authSettings;
@@ -20,13 +21,11 @@ namespace PeopleLookup.Mvc.Controllers
             _authSettings = authSettings.Value;
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult AccessDenied()
         {
             return View();
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
         [Route("logout")]
         public async Task<ActionResult> Logout()
         {
@@ -34,7 +33,6 @@ namespace PeopleLookup.Mvc.Controllers
             return Redirect($"{_authSettings.CasBaseUrl}logout");
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
         [AllowAnonymous]
         [Route("login")]
         public async Task Login(string returnUrl)

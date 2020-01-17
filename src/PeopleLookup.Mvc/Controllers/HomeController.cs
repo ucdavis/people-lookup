@@ -21,7 +21,6 @@ namespace PeopleLookup.Mvc.Controllers
             _permissionService = permissionService;
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> Index()
         {
             ViewBag.AllowSensitiveInfo = _permissionService.CanSeeSensitiveInfo();
@@ -30,7 +29,6 @@ namespace PeopleLookup.Mvc.Controllers
             return View(model);
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost]
         public async Task<ActionResult> Index(BulkModel model)
         {
@@ -171,14 +169,12 @@ namespace PeopleLookup.Mvc.Controllers
             return View(model);
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
         [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
         [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

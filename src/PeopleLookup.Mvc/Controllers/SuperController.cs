@@ -4,6 +4,7 @@ using System.Security.Claims;
 
 namespace PeopleLookup.Mvc.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [AutoValidateAntiforgeryToken]
     [Authorize]
     public class SuperController : Controller

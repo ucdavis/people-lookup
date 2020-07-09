@@ -129,7 +129,7 @@ namespace PeopleLookup.Mvc.Services
                 SearchResult searchResult = new SearchResult();
                 searchResult.SearchValue = search;
                 searchResult.ErrorMessage = "Error Occurred";
-                searchResult.ExceptionMessage = $"(LookupLastName) Error: {e.Message} Inner: {e.InnerException?.Message} {e}";
+                searchResult.ExceptionMessage = $"(Lookup PPSA Code) Error: {e.Message} Inner: {e.InnerException?.Message} {e}";
                 rtValue.Add(searchResult);
             }
 

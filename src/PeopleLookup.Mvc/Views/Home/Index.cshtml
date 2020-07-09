@@ -41,7 +41,15 @@
                     <label asp-for="BulkPpsIds" class="control-label"></label>
                     <textarea asp-for="BulkPpsIds" class="form-control"></textarea>
                 </div>
+                <div class="form-group">
+                    <label asp-for="BulkEmployeeId" class="control-label"></label>
+                    <textarea asp-for="BulkEmployeeId" class="form-control"></textarea>
+                </div>
             }
+            <div class="form-group">
+                <label asp-for="PpsaDeptCode" class="control-label"></label>
+                <input asp-for="PpsaDeptCode" class="form-control"/>
+            </div>
 
             <div class="form-group">
                 <input type="submit" value="Lookup Users" class="btn btn-primary" />

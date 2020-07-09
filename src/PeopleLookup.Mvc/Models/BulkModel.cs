@@ -32,6 +32,12 @@ namespace PeopleLookup.Mvc.Models
         [Display(Name = "Bulk Last Names")]
         public string BulkLastnames { get; set; }
 
+        [Display(Name = "Bulk Employee Ids")]
+        public string BulkEmployeeId { get; set; }
+
+        [Display(Name = "PPSA Department Code")]
+        public string PpsaDeptCode { get; set; }
+
         public IList<SearchResult> Results { get; set; }
     }
 

@@ -285,12 +285,14 @@ namespace PeopleLookup.Mvc.Services
             if (result.ResponseData.Results.Length > 0)
             {
                 var depts = new List<string>();
+                var deptCodes = new List<string>();
                 foreach (var ppsAssociationsResult in result.ResponseData.Results)
                 {
                     depts.Add(ppsAssociationsResult.apptDeptDisplayName);
+                    deptCodes.Add(ppsAssociationsResult.apptDeptCode);
                 }
 
-                searchResult.Departments = string.Join(", ", depts.Distinct());
+                searchResult.Departments = $"{string.Join(", ", depts.Distinct())} ({string.Join(", ", deptCodes.Distinct())})" ;
                 searchResult.Title = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.titleOfficialName))?.titleOfficialName;
             }
             

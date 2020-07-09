@@ -41,6 +41,7 @@ namespace PeopleLookup.Mvc.Controllers
             const string regexPpsIdPattern = @"\b[0-9]{2,10}\b"; //Based off StudentId???
             const string regexIamIdPattern = @"\b[0-9]{2,10}\b";
             const string regexLastNamePattern = @"\b[A-Z0-9\-]{2,50}\b";
+            const string regexEmpIdPattern = @"\b[0-9]{2,10}\b"; //Based off StudentId???
 
             model.Results = new List<SearchResult>();
             if (string.IsNullOrWhiteSpace(model.BulkEmail) 
@@ -48,7 +49,9 @@ namespace PeopleLookup.Mvc.Controllers
                 && string.IsNullOrWhiteSpace(model.BulkStudentIds) 
                 && string.IsNullOrWhiteSpace(model.BulkPpsIds) 
                 && string.IsNullOrWhiteSpace(model.BulkIamIds)
-                && string.IsNullOrWhiteSpace(model.BulkLastnames))
+                && string.IsNullOrWhiteSpace(model.BulkLastnames)
+                && string.IsNullOrWhiteSpace(model.BulkEmployeeId)
+                && string.IsNullOrWhiteSpace(model.PpsaDeptCode))
             {
                 ErrorMessage = "You must select something to search";
                 return View(model);
@@ -132,6 +135,19 @@ namespace PeopleLookup.Mvc.Controllers
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(model.PpsaDeptCode))
+            {
+                var results = await _identityService.LookupPpsaCode(model.PpsaDeptCode);
+                foreach (var result in results)
+                {
+                    if (!allowSensitiveInfo)
+                    {
+                        result.HideSensitiveFields();
+                    }
+                    model.Results.Add(result);
+                }
+            }
+
             if (allowSensitiveInfo)
             {
                 if (!string.IsNullOrWhiteSpace(model.BulkStudentIds))
@@ -153,6 +169,19 @@ namespace PeopleLookup.Mvc.Controllers
                         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
                     var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.ppsId, a.ToString())).ToArray();
+                    var tempResults = await Task.WhenAll(results);
+                    foreach (var tempResult in tempResults)
+                    {
+                        model.Results.Add(tempResult);
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.BulkEmployeeId))
+                {
+                    matches = System.Text.RegularExpressions.Regex.Matches(model.BulkEmployeeId, regexEmpIdPattern,
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+                    var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.employeeId, a.ToString())).ToArray();
                     var tempResults = await Task.WhenAll(results);
                     foreach (var tempResult in tempResults)
                     {

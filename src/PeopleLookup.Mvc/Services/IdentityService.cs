@@ -16,6 +16,8 @@ namespace PeopleLookup.Mvc.Services
         Task<SearchResult> LookupId(PeopleSearchField searchField, string search);
         Task<User> GetByKerberos(string kerb);
         Task<SearchResult[]> LookupLastName(string search);
+
+        Task<SearchResult[]> LookupPpsaCode(string search);
     }
 
     public class IdentityService : IIdentityService
@@ -90,6 +92,44 @@ namespace PeopleLookup.Mvc.Services
                 searchResult.SearchValue = search;
                 searchResult.ErrorMessage = "Error Occurred";
                 searchResult.ExceptionMessage = $"(LookupLastName) Error: {e.Message} Inner: {e.InnerException?.Message} {e}";
+                rtValue.Add(searchResult);
+            }
+
+
+            return rtValue.ToArray();
+        }
+
+        public async Task<SearchResult[]> LookupPpsaCode(string search)
+        {
+            var rtValue = new List<SearchResult>();
+            try
+            {
+                var Ppsaresults = await _clientws.PPSAssociations.GetIamIds(PPSAssociationsSearchField.adminDeptCode, search);
+
+                var iamIds = Ppsaresults.ResponseData.Results.Select(a => a.IamId).ToArray();
+                var results =
+                    iamIds.Select(a => LookupId(PeopleSearchField.iamId, a)).ToArray(); //These have their own try catch
+                var tempResults = await Task.WhenAll(results);
+
+                if (tempResults.Length <= 0)
+                {
+                    var sr = new SearchResult();
+                    sr.SearchValue = search;
+                    sr.Found = false;
+                    rtValue.Add(sr);
+                }
+                foreach (var result in tempResults)
+                {
+                    result.SearchValue = search;
+                    rtValue.Add(result);
+                }
+            }
+            catch (Exception e)
+            {
+                SearchResult searchResult = new SearchResult();
+                searchResult.SearchValue = search;
+                searchResult.ErrorMessage = "Error Occurred";
+                searchResult.ExceptionMessage = $"(Lookup PPSA Code) Error: {e.Message} Inner: {e.InnerException?.Message} {e}";
                 rtValue.Add(searchResult);
             }
 
@@ -245,12 +285,14 @@ namespace PeopleLookup.Mvc.Services
             if (result.ResponseData.Results.Length > 0)
             {
                 var depts = new List<string>();
+                var deptCodes = new List<string>();
                 foreach (var ppsAssociationsResult in result.ResponseData.Results)
                 {
                     depts.Add(ppsAssociationsResult.apptDeptDisplayName);
+                    deptCodes.Add(ppsAssociationsResult.apptDeptCode);
                 }
 
-                searchResult.Departments = string.Join(", ", depts.Distinct());
+                searchResult.Departments = $"{string.Join(", ", depts.Distinct())} ({string.Join(", ", deptCodes.Distinct())})" ;
                 searchResult.Title = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.titleOfficialName))?.titleOfficialName;
             }
             

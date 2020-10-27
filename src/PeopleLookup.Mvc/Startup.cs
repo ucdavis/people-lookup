@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AspNetCore.Security.CAS;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,6 +15,9 @@ using PeopleLookup.Mvc.Models;
 using PeopleLookup.Mvc.Services;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PeopleLookup.Mvc
 {
@@ -49,47 +51,24 @@ namespace PeopleLookup.Mvc
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
+            .AddCookie()
+            .AddOpenIdConnect(oidc =>
+            {
+                oidc.ClientId = Configuration["Authentication:ClientId"];
+                oidc.ClientSecret = Configuration["Authentication:ClientSecret"];
+                oidc.Authority = Configuration["Authentication:Authority"];
+                oidc.ResponseType = OpenIdConnectResponseType.Code;
+                oidc.Scope.Add("openid");
+                oidc.Scope.Add("profile");
+                oidc.Scope.Add("email");
+                oidc.Scope.Add("ucdProfile");
+                oidc.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.LoginPath = new PathString("/login");
-                })
-            .AddCAS(options => {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.CasServerUrlBase = Configuration["Authentication:CasBaseUrl"];
-                options.Events.OnTicketReceived = async context => { 
-
-                    var identity = (ClaimsIdentity) context.Principal.Identity;
-
-                    // kerb comes across in name & name identifier
-                    var kerb = identity?.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-                    if (string.IsNullOrWhiteSpace(kerb)) return;
-
-                    var identityService = services.BuildServiceProvider().GetService<IIdentityService>();
-
-                    var user = await identityService.GetByKerberos(kerb);
-
-                    if (user == null)
-                    {
-                        throw new InvalidOperationException("Could not retrieve user information from IAM");
-                    }
-
-                    identity.RemoveClaim(identity.FindFirst(ClaimTypes.NameIdentifier));
-                    identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
-
-                    identity.RemoveClaim(identity.FindFirst(ClaimTypes.Name));
-                    identity.AddClaim(new Claim(ClaimTypes.Name, user.Id));
-
-                    identity.AddClaim(new Claim(ClaimTypes.GivenName, user.FirstName));
-                    identity.AddClaim(new Claim(ClaimTypes.Surname, user.LastName));
-                    identity.AddClaim(new Claim("name", user.Name));
-                    identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-
-                    await Task.FromResult(0); 
+                    NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
                 };
             });
-
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 

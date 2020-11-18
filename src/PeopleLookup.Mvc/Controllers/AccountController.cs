@@ -30,7 +30,11 @@ namespace PeopleLookup.Mvc.Controllers
         public async Task<ActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return Redirect("https://cas.ucdavis.edu/cas/logout");
+
+            string url = Url.Action("Index", "Home");
+
+            // this triggers a redirect to the external provider for sign-out
+            return SignOut(new AuthenticationProperties { RedirectUri = url }, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous]

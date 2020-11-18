@@ -30,7 +30,7 @@ namespace PeopleLookup.Mvc.Controllers
         public async Task<ActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return Redirect($"{_authSettings.CasBaseUrl}logout");
+            return Redirect("https://cas.ucdavis.edu/cas/logout");
         }
 
         [AllowAnonymous]

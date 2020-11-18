@@ -392,6 +392,8 @@ namespace PeopleLookup.Mvc.Services
             searchResult.IamId = kerbResult.IamId;
             searchResult.Email = email;
             searchResult.FullName = kerbResult.FullName;
+            searchResult.FirstName = kerbResult.FirstName;
+            searchResult.LastName = kerbResult.LastName;
             searchResult.IsEmployee = kerbResult.IsEmployee;
             searchResult.IsFaculty = kerbResult.IsFaculty;
             searchResult.IsStudent = kerbResult.IsStudent;
@@ -411,6 +413,8 @@ namespace PeopleLookup.Mvc.Services
             searchResult.IamId = kerbResult.IamId;
             searchResult.Email = null;
             searchResult.FullName = kerbResult.FullName;
+            searchResult.FirstName = kerbResult.FirstName;
+            searchResult.LastName = kerbResult.LastName;
             searchResult.IsEmployee = kerbResult.IsEmployee;
             searchResult.IsFaculty = kerbResult.IsFaculty;
             searchResult.IsStudent = kerbResult.IsStudent;

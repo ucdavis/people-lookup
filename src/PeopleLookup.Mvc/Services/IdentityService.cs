@@ -294,6 +294,7 @@ namespace PeopleLookup.Mvc.Services
 
                 searchResult.Departments = $"{string.Join(", ", depts.Distinct())} ({string.Join(", ", deptCodes.Distinct())})" ;
                 searchResult.Title = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.titleOfficialName))?.titleOfficialName;
+                searchResult.ReportsToIamId = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.reportsToIAMID))?.reportsToIAMID;
             }
             
             return;

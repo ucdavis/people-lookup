@@ -64,6 +64,7 @@ namespace PeopleLookup.Mvc.Models
         public string EmployeeId { get; set; }
 
         public string Title { get; set; }
+        public string ReportsToIamId { get; set; }
         
         public void HideSensitiveFields()
         {
@@ -72,6 +73,7 @@ namespace PeopleLookup.Mvc.Models
             PpsId = null;
             EmployeeId = null;
             ExceptionMessage = null;
+            ReportsToIamId = null;
         }
 
         public string ExpandedAffiliation

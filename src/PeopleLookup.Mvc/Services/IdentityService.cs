@@ -293,7 +293,13 @@ namespace PeopleLookup.Mvc.Services
                 }
 
                 searchResult.Departments = $"{string.Join(", ", depts.Distinct())} ({string.Join(", ", deptCodes.Distinct())})" ;
-                searchResult.Title = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.titleOfficialName))?.titleOfficialName;
+                searchResult.Title = string.Empty;
+                if (result.ResponseData.Results.Any())
+                {
+                    searchResult.Title = string.Join(", ", result.ResponseData.Results.Where(a => a.titleOfficialName != null).Select(a => a.titleOfficialName).Distinct().ToArray());
+                }
+
+                
                 searchResult.ReportsToIamId = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.reportsToIAMID))?.reportsToIAMID;
             }
             

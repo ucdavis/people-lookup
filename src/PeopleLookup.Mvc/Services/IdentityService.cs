@@ -294,7 +294,7 @@ namespace PeopleLookup.Mvc.Services
 
                 searchResult.Departments = $"{string.Join(", ", depts.Distinct())} ({string.Join(", ", deptCodes.Distinct())})" ;
                 searchResult.Title = string.Empty;
-                if (result.ResponseData.Results.Any())
+                if (result.ResponseData.Results.Any(a => a.titleOfficialName != null))
                 {
                     searchResult.Title = string.Join(", ", result.ResponseData.Results.Where(a => a.titleOfficialName != null).Select(a => a.titleOfficialName).Distinct().ToArray());
                 }

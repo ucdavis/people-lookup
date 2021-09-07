@@ -246,7 +246,11 @@
                 });
         });
 
-
+        $('form').keydown(function(event) {
+            if (event.ctrlKey && event.keyCode === 13) {
+                $(this).trigger('submit');
+            }
+        });
     </script>
 }
 

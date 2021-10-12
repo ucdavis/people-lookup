@@ -299,8 +299,9 @@ namespace PeopleLookup.Mvc.Services
                     searchResult.Title = string.Join(", ", result.ResponseData.Results.Where(a => a.titleOfficialName != null).Select(a => a.titleOfficialName).Distinct().ToArray());
                 }
 
-                
-                searchResult.ReportsToIamId = result.ResponseData.Results.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a.reportsToIAMID))?.reportsToIAMID;
+                //Eventually, this may return multiple results
+                searchResult.ReportsToIamId = string.Join(", ", result.ResponseData.Results.Select(a => a.reportsToIAMID).Where(a => !string.IsNullOrWhiteSpace(a)).Distinct());
+
             }
             
             return;

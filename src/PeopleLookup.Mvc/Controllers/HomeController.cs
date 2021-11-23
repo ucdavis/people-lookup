@@ -210,5 +210,12 @@ namespace PeopleLookup.Mvc.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [AllowAnonymous]
+        [ResponseCache(Duration = 300)]
+        public ActionResult Ping()
+        {
+            return Content("Pong");
+        }
     }
 }

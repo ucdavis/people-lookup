@@ -411,6 +411,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.StudentId = kerbResult.StudentId;
             searchResult.BannerPidm = kerbResult.BannerPidm;
             searchResult.EmployeeId = kerbResult.EmployeeId;
+            searchResult.MothraId = kerbResult.MothraId;
         }
 
         private void PopulatePartialSearchResult(SearchResult searchResult, PeopleResult kerbResult)
@@ -432,6 +433,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.StudentId = kerbResult.StudentId;
             searchResult.BannerPidm = kerbResult.BannerPidm;
             searchResult.EmployeeId = kerbResult.EmployeeId;
+            searchResult.MothraId = kerbResult?.MothraId;
         }
     }
 }

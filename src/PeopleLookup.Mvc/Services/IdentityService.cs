@@ -163,12 +163,12 @@ namespace PeopleLookup.Mvc.Services
                     {
                         var kerbPerson = kerbResult.ResponseData.Results.First();
                         kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
-                        PopulateSearchResult(searchResult, kerbPerson, null);
+                        PopulateSearchResult(searchResult, kerbPerson, ucdContactResult);
                     }
                     else
                     {
                         var person = peopleResult.ResponseData.Results.First();
-                        PopulatePartialSearchResult(searchResult, person);
+                        PopulatePartialSearchResult(searchResult, person, ucdContactResult);
                     }
 
                     searchResult.ErrorMessage = "No Contact details";
@@ -181,14 +181,14 @@ namespace PeopleLookup.Mvc.Services
                 {
                     var kerbPerson = result.ResponseData.Results.First();
                     kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
-                    PopulateSearchResult(searchResult, kerbPerson, ucdContactResult.ResponseData.Results.First().Email);
+                    PopulateSearchResult(searchResult, kerbPerson, ucdContactResult);
                 }
                 else
                 {
                     if (ucdContactResult.ResponseData.Results.Length > 0)
                     {
                         var person = peopleResult.ResponseData.Results.First();
-                        PopulatePartialSearchResult(searchResult, person);
+                        PopulatePartialSearchResult(searchResult, person, ucdContactResult);
                         searchResult.ErrorMessage = "Kerb Not Found";
                     }
                 }
@@ -340,7 +340,7 @@ namespace PeopleLookup.Mvc.Services
             if (result.ResponseData.Results.Length > 0)
             {
                 var kerbPerson = result.ResponseData.Results.First();
-                PopulateSearchResult(searchResult, kerbPerson, email);
+                PopulateSearchResult(searchResult, kerbPerson, iamResult);
                 return searchResult;
             }
             return searchResult;
@@ -383,21 +383,20 @@ namespace PeopleLookup.Mvc.Services
             }
 
 
-
-            var email = ucdContactResult.ResponseData.Results.First().Email ?? ucdContactResult.ResponseData.Results.First().CampusEmail;
-            PopulateSearchResult(searchResult, ucdKerbPerson, email);
+            PopulateSearchResult(searchResult, ucdKerbPerson, ucdContactResult);
 
 
             return searchResult;
 
         }
 
-        private void PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, string email)
+        private void PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, ContactResults contactResults)
         {
             searchResult.Found = true;
             searchResult.KerbId = kerbResult.UserId;
             searchResult.IamId = kerbResult.IamId;
-            searchResult.Email = email;
+            searchResult.Email = contactResults.ResponseData.Results.First().Email ?? contactResults.ResponseData.Results.First().CampusEmail;
+            searchResult.WorkPhone = contactResults.ResponseData.Results.First().WorkPhone ?? contactResults.ResponseData.Results.First().WorkPhone;
             searchResult.FullName = kerbResult.FullName;
             searchResult.FirstName = kerbResult.FirstName;
             searchResult.LastName = kerbResult.LastName;
@@ -414,12 +413,13 @@ namespace PeopleLookup.Mvc.Services
             searchResult.MothraId = kerbResult.MothraId;
         }
 
-        private void PopulatePartialSearchResult(SearchResult searchResult, PeopleResult kerbResult)
+        private void PopulatePartialSearchResult(SearchResult searchResult, PeopleResult kerbResult, ContactResults contactResults)
         {
             searchResult.Found = true;
             searchResult.KerbId = null;
             searchResult.IamId = kerbResult.IamId;
-            searchResult.Email = null;
+            searchResult.Email = contactResults.ResponseData.Results.First().Email ?? contactResults.ResponseData.Results.First().CampusEmail;
+            searchResult.WorkPhone = contactResults.ResponseData.Results.First().WorkPhone ?? contactResults.ResponseData.Results.First().WorkPhone;
             searchResult.FullName = kerbResult.FullName;
             searchResult.FirstName = kerbResult.FirstName;
             searchResult.LastName = kerbResult.LastName;

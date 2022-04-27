@@ -66,6 +66,7 @@ namespace PeopleLookup.Mvc.Models
 
         public string Title { get; set; }
         public string ReportsToIamId { get; set; }
+        public string WorkPhone { get;set;}
         
         public void HideSensitiveFields()
         {

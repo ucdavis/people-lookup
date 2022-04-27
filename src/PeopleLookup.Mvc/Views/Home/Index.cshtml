@@ -95,6 +95,7 @@
                             <th>Roles</th>
                             <th>Dept(s)</th>
                             <th>Title(s)</th>
+                            <th>Work Phone</th>
                             <th>Reports To</th>
                             <th>Errors</th>
                             <th>Exception</th>
@@ -129,6 +130,7 @@
                                 <td>@item.ExpandedAffiliation</td>
                                 <td>@item.Departments</td>
                                 <td>@item.Title</td>
+                                <td>@item.WorkPhone</td>
                                 <td>@item.ReportsToIamId</td>
                                 <td>@item.ErrorMessage</td>
                                 <td>@item.ExceptionMessage</td>
@@ -177,10 +179,10 @@
     <script type="text/javascript">
         $(function() {
             var allowSensitiveInfo = ('@ViewBag.AllowSensitiveInfo' === 'True');
-            var showCols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18,19,20,21,22,23,24];
+            var showCols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18,19,20,21,22,23,24,25];
 
             if (allowSensitiveInfo !== true) {
-                showCols = [0, 1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23];
+                showCols = [0, 1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24];
             }
             var table = $("#results").DataTable({
                 "dom": 'lBfrtip',
@@ -224,7 +226,7 @@
                     },
                 ],
                 "columnDefs": [
-                    { "targets": [3, 4, 5, 6, 7, 8, 11, 12, 13, 17, 18, 19, 20, 21, 22, 24], "visible": false }
+                    { "targets": [3, 4, 5, 6, 7, 8, 11, 12, 13, 17, 18, 19, 20, 21, 22, 23, 25], "visible": false }
                 ]
             });
 

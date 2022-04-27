@@ -1,0 +1,155 @@
+﻿@model PeopleLookup.Mvc.Models.SearchResult
+
+@{
+    ViewData["Title"] = "User lookup details";
+}
+
+@if (Model == null || Model.Found == false)
+{
+    <div class="card">
+        <div class="card-header">
+            <h2>@ViewBag.Title</h2>
+        </div>
+        <div class="card-body">
+            <h3 style="color:red">User Not Found</h3>
+            <small class="form-text text-muted">This may be because the user is no longer active in the campus system, or the email used isn't in the campus IAM system.</small>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <h2>@ViewBag.Title</h2>
+        </div>
+        <div class="card-body">
+            <div>
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        Name
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.FullName)
+                    </dd>
+                    @if (ViewBag.AllowSensitiveInfo == true)
+                    {
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.KerbId)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.KerbId)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.IamId)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.IamId)
+                        </dd>
+                    }
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Email)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Email)
+                    </dd>
+                    @if (ViewBag.AllowSensitiveInfo == true)
+                    {
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.IsEmployee)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.IsEmployee)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.IsHSEmployee)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.IsHSEmployee)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.IsFaculty)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.IsFaculty)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.IsStudent)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.IsStudent)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.IsExternal)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.IsExternal)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.IsStaff)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.IsStaff)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.PpsId)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.PpsId)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.StudentId)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.StudentId)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.BannerPidm)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.BannerPidm)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.EmployeeId)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.EmployeeId)
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.MothraId)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.MothraId)
+                        </dd>
+                    }
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Title)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Title)
+                    </dd>
+                    @if (ViewBag.AllowSensitiveInfo == true)
+                    {
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.ReportsToIamId)
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.ReportsToIamId)
+                        </dd>
+                    }
+                    <dt class="col-sm-2">
+                        Affiliation
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.ExpandedAffiliation)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Departments)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Departments)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+}

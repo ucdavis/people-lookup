@@ -198,6 +198,34 @@ namespace PeopleLookup.Mvc.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Route("Detail/{id}")]
+        public async Task<IActionResult> Detail(string id)
+        {
+            var allowSensitiveInfo = _permissionService.CanSeeSensitiveInfo();
+            ViewBag.AllowSensitiveInfo = allowSensitiveInfo;
+
+            SearchResult result = null;
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                result = new SearchResult();
+                result.ErrorMessage = "No parameter passed";
+            }
+            else
+            {
+
+                result = await _identityService.Lookup(id);
+                if (!allowSensitiveInfo)
+                {
+                    result.HideSensitiveFields();
+                }
+            }
+
+            return View(result);
+
+        }
+
         [AllowAnonymous]
         public IActionResult Privacy()
         {

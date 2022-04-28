@@ -13,6 +13,10 @@
         <div class="card-body">
             <h3 style="color:red">User Not Found</h3>
             <small class="form-text text-muted">This may be because the user is no longer active in the campus system, or the email used isn't in the campus IAM system.</small>
+            @if(Model != null && !string.IsNullOrWhiteSpace(Model.ErrorMessage))
+            {
+                <small class="form-text text-muted">@Model.ErrorMessage</small>
+            }
         </div>
     </div>
 }

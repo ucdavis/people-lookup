@@ -199,7 +199,7 @@ namespace PeopleLookup.Mvc.Controllers
         }
 
         [HttpGet]
-        [Route("Detail/{id}")]
+        [Route("Detail/{id?}")]
         public async Task<IActionResult> Detail(string id)
         {
             var allowSensitiveInfo = _permissionService.CanSeeSensitiveInfo();

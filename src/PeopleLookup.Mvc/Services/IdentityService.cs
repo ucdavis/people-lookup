@@ -373,18 +373,16 @@ namespace PeopleLookup.Mvc.Services
             }
 
             var ucdKerbPerson = ucdKerbResult.ResponseData.Results.First();
-            // find their email
+
+            // find their contact info
             var ucdContactResult = await _clientws.Contacts.Get(ucdKerbPerson.IamId);
-
-            if (ucdContactResult.ResponseData.Results.Length == 0)
-            {
-                searchResult.ErrorMessage = "Contact Info not found.";
-                return searchResult;
-            }
-
 
             PopulateSearchResult(searchResult, ucdKerbPerson, ucdContactResult);
 
+            if (ucdContactResult.ResponseData.Results.Length == 0)
+            {                
+                searchResult.ErrorMessage = "Contact Info not found.";
+            }
 
             return searchResult;
 
@@ -392,11 +390,13 @@ namespace PeopleLookup.Mvc.Services
 
         private void PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, ContactResults contactResults)
         {
+            var contact = contactResults.ResponseData.Results.FirstOrDefault();
+
             searchResult.Found = true;
             searchResult.KerbId = kerbResult.UserId;
             searchResult.IamId = kerbResult.IamId;
-            searchResult.Email = contactResults.ResponseData.Results.First().Email ?? contactResults.ResponseData.Results.First().CampusEmail;
-            searchResult.WorkPhone = contactResults.ResponseData.Results.First().WorkPhone ?? contactResults.ResponseData.Results.First().WorkPhone;
+            searchResult.Email = contact?.Email;
+            searchResult.WorkPhone = contact?.WorkPhone;
             searchResult.FullName = kerbResult.FullName;
             searchResult.FirstName = kerbResult.FirstName;
             searchResult.LastName = kerbResult.LastName;

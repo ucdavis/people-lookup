@@ -415,11 +415,13 @@ namespace PeopleLookup.Mvc.Services
 
         private void PopulatePartialSearchResult(SearchResult searchResult, PeopleResult kerbResult, ContactResults contactResults)
         {
+            var contact = contactResults.ResponseData.Results.FirstOrDefault();
+
             searchResult.Found = true;
             searchResult.KerbId = null;
             searchResult.IamId = kerbResult.IamId;
-            searchResult.Email = contactResults.ResponseData.Results.First().Email ?? contactResults.ResponseData.Results.First().CampusEmail;
-            searchResult.WorkPhone = contactResults.ResponseData.Results.First().WorkPhone ?? contactResults.ResponseData.Results.First().WorkPhone;
+            searchResult.Email = contact?.Email;
+            searchResult.WorkPhone = contact?.WorkPhone;
             searchResult.FullName = kerbResult.FullName;
             searchResult.FirstName = kerbResult.FirstName;
             searchResult.LastName = kerbResult.LastName;

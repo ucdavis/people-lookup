@@ -69,7 +69,7 @@ namespace PeopleLookup.Mvc.Services
             try
             {
                 //var clientws = new IetClient(_authSettings.IamKey);
-                var peopleResult = await _clientws.People.Search(PeopleSearchField.dLastName, search);
+                var peopleResult = await _clientws.People.Search(PeopleSearchField.oLastName, search);
                 var iamIds = peopleResult.ResponseData.Results.Select(a => a.IamId).Distinct().ToArray();
                 var results = iamIds.Select(a => LookupId(PeopleSearchField.iamId, a)).ToArray(); //These have their own try catch
                 var tempResults = await Task.WhenAll(results);

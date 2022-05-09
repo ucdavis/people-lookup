@@ -84,6 +84,7 @@
                             <th>Banner PIDM</th>
                             <th>Email</th>
                             <th>Full Name</th>
+                            <th>Pronouns</th>
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>Employee</th>
@@ -119,6 +120,7 @@
                                 <td>@item.BannerPidm</td>
                                 <td>@item.Email</td>
                                 <td>@item.FullName</td>
+                                <td>@item.Pronouns</td>
                                 <td>@item.FirstName</td>
                                 <td>@item.LastName</td>
                                 <td>@item.IsEmployee.ToYesNoString()</td>
@@ -179,10 +181,10 @@
     <script type="text/javascript">
         $(function() {
             var allowSensitiveInfo = ('@ViewBag.AllowSensitiveInfo' === 'True');
-            var showCols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18,19,20,21,22,23,24,25];
+            var showCols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18,19,20,21,22,23,24,25,26];
 
             if (allowSensitiveInfo !== true) {
-                showCols = [0, 1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24];
+                showCols = [0, 1, 2, 3, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25];
             }
             var table = $("#results").DataTable({
                 "dom": 'lBfrtip',
@@ -226,7 +228,7 @@
                     },
                 ],
                 "columnDefs": [
-                    { "targets": [3, 4, 5, 6, 7, 8, 11, 12, 13, 17, 18, 19, 20, 21, 22, 23, 25], "visible": false }
+                    { "targets": [3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 18, 19, 20, 21, 22, 23, 24, 26], "visible": false }
                 ]
             });
 

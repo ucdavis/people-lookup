@@ -48,6 +48,7 @@ namespace PeopleLookup.Mvc.Models
         public string FullName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Pronouns { get;set;}
         public string KerbId { get; set; }
         public string IamId { get; set; }
         public string Email { get; set; }

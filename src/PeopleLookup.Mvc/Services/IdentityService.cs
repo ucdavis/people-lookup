@@ -400,6 +400,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.FullName = kerbResult.FullName;
             searchResult.FirstName = kerbResult.FirstName;
             searchResult.LastName = kerbResult.LastName;
+            searchResult.Pronouns = kerbResult.DPronouns;
             searchResult.IsEmployee = kerbResult.IsEmployee;
             searchResult.IsFaculty = kerbResult.IsFaculty;
             searchResult.IsStudent = kerbResult.IsStudent;
@@ -424,6 +425,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.WorkPhone = contact?.WorkPhone;
             searchResult.FullName = kerbResult.FullName;
             searchResult.FirstName = kerbResult.FirstName;
+            searchResult.Pronouns = kerbResult.DPronouns;
             searchResult.LastName = kerbResult.LastName;
             searchResult.IsEmployee = kerbResult.IsEmployee;
             searchResult.IsFaculty = kerbResult.IsFaculty;

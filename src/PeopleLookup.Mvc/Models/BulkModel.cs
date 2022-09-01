@@ -46,6 +46,7 @@ namespace PeopleLookup.Mvc.Models
         public string SearchValue { get; set; }
         public bool Found { get; set; } = false;
         public string FullName { get; set; }
+        public string O_FullName { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Pronouns { get;set;}
@@ -78,6 +79,7 @@ namespace PeopleLookup.Mvc.Models
             ExceptionMessage = null;
             ReportsToIamId = null;
             MothraId = null;
+            O_FullName = null;
         }
 
         public string ExpandedAffiliation

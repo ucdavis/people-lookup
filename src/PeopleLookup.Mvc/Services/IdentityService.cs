@@ -398,6 +398,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.Email = contact?.Email;
             searchResult.WorkPhone = contact?.WorkPhone;
             searchResult.FullName = kerbResult.FullName;
+            searchResult.O_FullName = kerbResult.OFullName;
             searchResult.FirstName = kerbResult.FirstName;
             searchResult.LastName = kerbResult.LastName;
             searchResult.Pronouns = kerbResult.DPronouns;
@@ -424,6 +425,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.Email = contact?.Email;
             searchResult.WorkPhone = contact?.WorkPhone;
             searchResult.FullName = kerbResult.FullName;
+            searchResult.O_FullName = kerbResult.OFullName;
             searchResult.FirstName = kerbResult.FirstName;
             searchResult.Pronouns = kerbResult.DPronouns;
             searchResult.LastName = kerbResult.LastName;

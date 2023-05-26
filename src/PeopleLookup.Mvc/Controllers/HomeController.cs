@@ -21,7 +21,7 @@ namespace PeopleLookup.Mvc.Controllers
             _permissionService = permissionService;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             ViewBag.AllowSensitiveInfo = _permissionService.CanSeeSensitiveInfo();
 

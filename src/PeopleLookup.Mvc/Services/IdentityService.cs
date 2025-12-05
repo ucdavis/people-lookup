@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -409,6 +409,10 @@ namespace PeopleLookup.Mvc.Services
                 if (contactItem.Email != null && !emails.Contains(contactItem.Email.ToLower()))
                 {
                     emails.Add(contactItem.Email.ToLower());
+                }
+                if(contactItem.HsEmail != null && !emails.Contains(contactItem.HsEmail.ToLower()))
+                {
+                    emails.Add(contactItem.HsEmail.ToLower());
                 }
             }
 

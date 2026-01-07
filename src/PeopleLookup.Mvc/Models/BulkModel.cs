@@ -82,6 +82,7 @@ namespace PeopleLookup.Mvc.Models
             ReportsToIamId = null;
             MothraId = null;
             O_FullName = null;
+            OtherEmails = null;
         }
 
         public string ExpandedAffiliation

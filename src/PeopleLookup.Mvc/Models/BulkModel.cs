@@ -54,6 +54,8 @@ namespace PeopleLookup.Mvc.Models
         public string IamId { get; set; }
         public string Email { get; set; }
 
+        public string OtherEmails { get; set; }
+
         public bool IsEmployee { get; set; }
         public bool IsHSEmployee { get; set; }
         public bool IsFaculty { get; set; }
@@ -80,6 +82,7 @@ namespace PeopleLookup.Mvc.Models
             ReportsToIamId = null;
             MothraId = null;
             O_FullName = null;
+            OtherEmails = null;
         }
 
         public string ExpandedAffiliation

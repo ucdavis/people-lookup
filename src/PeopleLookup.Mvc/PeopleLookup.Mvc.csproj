@@ -11,7 +11,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="ietws" Version="0.2.12" />
+    <PackageReference Include="ietws" Version="0.2.26" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.16" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />

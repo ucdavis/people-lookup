@@ -214,6 +214,11 @@ namespace PeopleLookup.Mvc.Controllers
             }
             else
             {
+                if(allowSensitiveInfo && id.Contains("@health."))
+                {
+                    //Health emails are (probably) the same as ucd emails, so we can just swap out the domain to get correct results.
+                    id = id.Replace("@health.", "@");
+                }
 
                 result = await _identityService.Lookup(id);
                 if (!allowSensitiveInfo)

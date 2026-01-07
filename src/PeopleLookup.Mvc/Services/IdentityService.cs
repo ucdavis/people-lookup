@@ -164,11 +164,11 @@ namespace PeopleLookup.Mvc.Services
                     {
                         var kerbPerson = kerbResult.ResponseData.Results.First();
                         kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
-                        PopulateSearchResult(searchResult, kerbPerson, ucdContactResult, personResult);
+                        await PopulateSearchResult(searchResult, kerbPerson, ucdContactResult, personResult);
                     }
                     else
                     {
-                        PopulatePartialSearchResult(searchResult, personResult, ucdContactResult);
+                        await PopulatePartialSearchResult(searchResult, personResult, ucdContactResult);
                     }
 
                     searchResult.ErrorMessage = "No Contact details";
@@ -181,13 +181,13 @@ namespace PeopleLookup.Mvc.Services
                 {
                     var kerbPerson = result.ResponseData.Results.First();
                     kerbPerson.EmployeeId = peopleResult.ResponseData.Results.First().EmployeeId;
-                    PopulateSearchResult(searchResult, kerbPerson, ucdContactResult, personResult);
+                    await PopulateSearchResult(searchResult, kerbPerson, ucdContactResult, personResult);
                 }
                 else
                 {
                     if (ucdContactResult.ResponseData.Results.Length > 0)
                     {
-                        PopulatePartialSearchResult(searchResult, personResult, ucdContactResult);
+                        await PopulatePartialSearchResult(searchResult, personResult, ucdContactResult);
                         searchResult.ErrorMessage = "Kerb Not Found";
                     }
                 }
@@ -340,7 +340,7 @@ namespace PeopleLookup.Mvc.Services
             {
                 var kerbPerson = result.ResponseData.Results.First();
                 var personResults = await _clientws.People.Get(iamId);
-                PopulateSearchResult(searchResult, kerbPerson, iamResult, personResults.ResponseData.Results.First());
+                await PopulateSearchResult(searchResult, kerbPerson, iamResult, personResults.ResponseData.Results.First());
                 return searchResult;
             }
             return searchResult;
@@ -384,7 +384,7 @@ namespace PeopleLookup.Mvc.Services
             // find their contact info
             var ucdContactResult = await _clientws.Contacts.Get(ucdKerbPerson.IamId);
 
-            PopulateSearchResult(searchResult, ucdKerbPerson, ucdContactResult, personResults.ResponseData.Results.First());
+            await PopulateSearchResult(searchResult, ucdKerbPerson, ucdContactResult, personResults.ResponseData.Results.First());
 
             if (ucdContactResult.ResponseData.Results.Length == 0)
             {                
@@ -395,7 +395,7 @@ namespace PeopleLookup.Mvc.Services
 
         }
 
-        private void PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, ContactResults contactResults, PeopleResult personResult)
+        private async Task PopulateSearchResult(SearchResult searchResult, KerberosResult kerbResult, ContactResults contactResults, PeopleResult personResult)
         {
             var contact = contactResults.ResponseData.Results.FirstOrDefault();
 
@@ -416,10 +416,32 @@ namespace PeopleLookup.Mvc.Services
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(kerbResult.IamId))
+            {
+                //Try to get health email
+                var hsResult = await _clientws.HsData.Search(HsDataSearchField.iamId, kerbResult.IamId);
+                if (hsResult != null)
+                {
+                    foreach (var hsItem in hsResult.ResponseData.Results)
+                    {
+                        if (hsItem.HealthEmail != null && !emails.Contains(hsItem.HealthEmail.ToLower()))
+                        {
+                            emails.Add(hsItem.HealthEmail.ToLower());
+                        }
+                    }
+                }
+            }
+
+            if (contact?.Email != null && emails.Contains(contact.Email.ToLower()))
+            {
+                emails.Remove(contact.Email.ToLower());
+            }
+
             searchResult.Found = true;
             searchResult.KerbId = kerbResult.UserId;
             searchResult.IamId = kerbResult.IamId;
-            searchResult.Email = emails.Any() ? string.Join("; ", emails) : null;
+            searchResult.Email = contact?.Email;
+            searchResult.OtherEmails = emails.Any() ? string.Join("; ", emails) : null;
             searchResult.WorkPhone = contact?.WorkPhone;
             searchResult.FullName = kerbResult.FullName;
             searchResult.O_FullName = kerbResult.OFullName;
@@ -439,7 +461,7 @@ namespace PeopleLookup.Mvc.Services
             searchResult.MothraId = kerbResult.MothraId;
         }
 
-        private void PopulatePartialSearchResult(SearchResult searchResult, PeopleResult kerbResult, ContactResults contactResults)
+        private async Task PopulatePartialSearchResult(SearchResult searchResult, PeopleResult kerbResult, ContactResults contactResults)
         {
             var contact = contactResults.ResponseData.Results.FirstOrDefault();
 
@@ -455,11 +477,32 @@ namespace PeopleLookup.Mvc.Services
                     emails.Add(contactItem.Email.ToLower());
                 }
             }
+            if(!string.IsNullOrWhiteSpace(kerbResult.IamId))
+            {
+                //Try to get health email
+                var hsResult = await _clientws.HsData.Search(HsDataSearchField.iamId, kerbResult.IamId);
+                if (hsResult != null)
+                {
+                    foreach (var hsItem in hsResult.ResponseData.Results)
+                    {
+                        if (hsItem.HealthEmail != null && !emails.Contains(hsItem.HealthEmail.ToLower()))
+                        {
+                            emails.Add(hsItem.HealthEmail.ToLower());
+                        }
+                    }
+                }
+            }
+
+            if(contact?.Email != null && emails.Contains(contact.Email.ToLower()))
+            {
+                emails.Remove(contact.Email.ToLower());
+            }
 
             searchResult.Found = true;
             searchResult.KerbId = null;
             searchResult.IamId = kerbResult.IamId;
-            searchResult.Email = emails.Any() ? string.Join("; ", emails) : null;
+            searchResult.Email = contact?.Email;
+            searchResult.OtherEmails = emails.Any() ? string.Join("; ", emails) : null;
             searchResult.WorkPhone = contact?.WorkPhone;
             searchResult.FullName = kerbResult.FullName;
             searchResult.O_FullName = kerbResult.OFullName;

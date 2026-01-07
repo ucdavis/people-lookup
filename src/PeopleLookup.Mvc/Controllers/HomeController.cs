@@ -226,6 +226,12 @@ namespace PeopleLookup.Mvc.Controllers
 
         }
 
+        [HttpGet]
+        public IActionResult Test()
+        {
+            throw new System.Exception("This is a test exception for demo purposes only. Please ignore.");
+        }
+
         [AllowAnonymous]
         public IActionResult Privacy()
         {

@@ -362,6 +362,13 @@ namespace PeopleLookup.Mvc.Services
 
             if (ucdKerbResult.ResponseData.Results.Length != 1)
             {
+                //foreach (var res in ucdKerbResult.ResponseData.Results)
+                //{
+                //    var jsonString = System.Text.Json.JsonSerializer.Serialize(res, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                //    System.Diagnostics.Debug.WriteLine(jsonString);
+                //}
+
+
                 var iamIds = ucdKerbResult.ResponseData.Results.Select(a => a.IamId).Distinct().ToArray();
                 var userIDs = ucdKerbResult.ResponseData.Results.Select(a => a.UserId).Distinct().ToArray();
                 if (iamIds.Length != 1 && userIDs.Length != 1)
@@ -374,7 +381,11 @@ namespace PeopleLookup.Mvc.Services
 
             var ucdKerbPerson = ucdKerbResult.ResponseData.Results.First();
             var personResults = await _clientws.People.Get(ucdKerbPerson.IamId);
-            if(personResults.ResponseData.Results.Length != 1)
+
+            //Sometimes, this was returning multiple identical results. So we need to check for that.
+            var uniquePersonResultCount = personResults.ResponseData.Results.Select(a => System.Text.Json.JsonSerializer.Serialize(a)).Distinct().ToArray().Length;
+
+            if (uniquePersonResultCount != 1)
             {
                 searchResult.ErrorMessage =
                     $"IAM issue with non unique values for IAM Id: {ucdKerbPerson.IamId}";

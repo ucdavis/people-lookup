@@ -14,6 +14,7 @@ namespace PeopleLookup.Mvc.Controllers
     {
         private readonly IIdentityService _identityService;
         private readonly IPermissionService _permissionService;
+        const int BatchSize = 20;
 
         public HomeController(IIdentityService identityService, IPermissionService permissionService)
         {
@@ -64,10 +65,21 @@ namespace PeopleLookup.Mvc.Controllers
                 matches = System.Text.RegularExpressions.Regex.Matches(model.BulkEmail, regexEmailPattern,
                         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-                var results = matches.Select(a => _identityService.Lookup(a.ToString())).ToArray();
+                var results = new List<SearchResult>();
+                var batches = matches.Select(m => m.ToString())
+                    .Select((value, index) => new { value, index })
+                    .GroupBy(x => x.index / BatchSize) // Process 20 at a time
+                    .Select(g => g.Select(x => x.value).ToList());
 
-                var tempResults = await Task.WhenAll(results);
-                foreach (var tempResult in tempResults)
+                foreach (var batch in batches)
+                {
+                    var batchResults = await Task.WhenAll(
+                        batch.Select(item => _identityService.Lookup(item))
+                    );
+                    results.AddRange(batchResults);
+                }
+
+                foreach (var tempResult in results)
                 {
                     //I could change this to AddRange if I move the AllowSensitive to the lookup service and change it to a List from IList.
                     if (!allowSensitiveInfo)
@@ -82,9 +94,22 @@ namespace PeopleLookup.Mvc.Controllers
             {
                 matches = System.Text.RegularExpressions.Regex.Matches(model.BulkKerb, regexKerbPattern,
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                var results = matches.Select(a => _identityService.Lookup(a.ToString())).ToArray();
-                var tempResults = await Task.WhenAll(results);
-                foreach (var tempResult in tempResults)
+
+                var results = new List<SearchResult>();
+                var batches = matches.Select(m => m.ToString())
+                    .Select((value, index) => new { value, index })
+                    .GroupBy(x => x.index / BatchSize) // Process 20 at a time
+                    .Select(g => g.Select(x => x.value).ToList());
+
+                foreach (var batch in batches)
+                {
+                    var batchResults = await Task.WhenAll(
+                        batch.Select(item => _identityService.Lookup(item))
+                    );
+                    results.AddRange(batchResults);
+                }
+
+                foreach (var tempResult in results)
                 {
                     //I could change this to AddRange if I move the AllowSensitive to the lookup service and change it to a List from IList.
                     if (!allowSensitiveInfo)
@@ -99,9 +124,22 @@ namespace PeopleLookup.Mvc.Controllers
             {
                 matches = System.Text.RegularExpressions.Regex.Matches(model.BulkIamIds, regexIamIdPattern,
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.iamId,a.ToString())).ToArray();
-                var tempResults = await Task.WhenAll(results);
-                foreach (var tempResult in tempResults)
+
+                var results = new List<SearchResult>();
+                var batches = matches.Select(m => m.ToString())
+                    .Select((value, index) => new { value, index })
+                    .GroupBy(x => x.index / BatchSize) // Process 20 at a time
+                    .Select(g => g.Select(x => x.value).ToList());
+
+                foreach (var batch in batches)
+                {
+                    var batchResults = await Task.WhenAll(
+                        batch.Select(item => _identityService.LookupId(PeopleSearchField.iamId, item))
+                    );
+                    results.AddRange(batchResults);
+                }
+
+                foreach (var tempResult in results)
                 {
                     //I could change this to AddRange if I move the AllowSensitive to the lookup service and change it to a List from IList.
                     if (!allowSensitiveInfo) //Was missing?
@@ -155,9 +193,21 @@ namespace PeopleLookup.Mvc.Controllers
                     matches = System.Text.RegularExpressions.Regex.Matches(model.BulkStudentIds, regexStudentIdPattern,
                         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-                    var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.studentId, a.ToString())).ToArray();
-                    var tempResults = await Task.WhenAll(results);
-                    foreach (var tempResult in tempResults)
+                    var results = new List<SearchResult>();
+                    var batches = matches.Select(m => m.ToString())
+                        .Select((value, index) => new { value, index })
+                        .GroupBy(x => x.index / BatchSize) // Process 20 at a time
+                        .Select(g => g.Select(x => x.value).ToList());
+
+                    foreach (var batch in batches)
+                    {
+                        var batchResults = await Task.WhenAll(
+                            batch.Select(item => _identityService.LookupId(PeopleSearchField.studentId, item))
+                        );
+                        results.AddRange(batchResults);
+                    }
+
+                    foreach (var tempResult in results)
                     {
                         model.Results.Add(tempResult);
                     }
@@ -181,9 +231,21 @@ namespace PeopleLookup.Mvc.Controllers
                     matches = System.Text.RegularExpressions.Regex.Matches(model.BulkEmployeeId, regexEmpIdPattern,
                         System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-                    var results = matches.Select(a => _identityService.LookupId(PeopleSearchField.employeeId, a.ToString())).ToArray();
-                    var tempResults = await Task.WhenAll(results);
-                    foreach (var tempResult in tempResults)
+                    var results = new List<SearchResult>();
+                    var batches = matches.Select(m => m.ToString())
+                        .Select((value, index) => new { value, index })
+                        .GroupBy(x => x.index / BatchSize) // Process 20 at a time
+                        .Select(g => g.Select(x => x.value).ToList());
+
+                    foreach (var batch in batches)
+                    {
+                        var batchResults = await Task.WhenAll(
+                            batch.Select(item => _identityService.LookupId(PeopleSearchField.employeeId, item))
+                        );
+                        results.AddRange(batchResults);
+                    }
+
+                    foreach (var tempResult in results)
                     {
                         model.Results.Add(tempResult);
                     }

@@ -374,7 +374,10 @@ namespace PeopleLookup.Mvc.Services
 
             var ucdKerbPerson = ucdKerbResult.ResponseData.Results.First();
             var personResults = await _clientws.People.Get(ucdKerbPerson.IamId);
-            if(personResults.ResponseData.Results.Length != 1)
+            //Sometimes, this was returning multiple identical results. So we need to check for that.
+            var uniquePersonResultCount = personResults.ResponseData.Results.Select(a => System.Text.Json.JsonSerializer.Serialize(a)).Distinct().ToArray().Length;
+
+            if (uniquePersonResultCount != 1)
             {
                 searchResult.ErrorMessage =
                     $"IAM issue with non unique values for IAM Id: {ucdKerbPerson.IamId}";

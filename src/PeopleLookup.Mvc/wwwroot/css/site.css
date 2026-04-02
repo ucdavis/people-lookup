@@ -71,3 +71,58 @@ p.discreet {
     0 2px 5px 0 rgba(49, 49, 93, 0.1),
     0 1px 2px 0 rgba(0, 0, 0, 0.08);
 }
+
+.copy-detail-wrap {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  max-width: 100%;
+}
+
+.copy-detail-text {
+  min-width: 0;
+}
+
+.copy-detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6c757d;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  text-decoration: none !important;
+  transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.detail-fields dd:hover .copy-detail-button,
+.detail-fields dd:focus-within .copy-detail-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.copy-detail-button:hover,
+.copy-detail-button:focus {
+  color: #004987;
+  box-shadow: none;
+  outline: 0;
+}
+
+.copy-detail-icon {
+  display: inline-flex;
+}
+
+.copy-detail-icon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+@media (hover: none) {
+  .copy-detail-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

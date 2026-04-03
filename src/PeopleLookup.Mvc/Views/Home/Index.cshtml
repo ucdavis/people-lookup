@@ -159,6 +159,9 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="detail-page-link-container" class="mb-3" style="display: none;">
+                    <a id="detail-page-link" href="#" target="_blank" rel="noopener noreferrer">View in Details</a>
+                </div>
                 <table id="table-details" class="table ">
 
                 </table>
@@ -184,6 +187,7 @@
     <script type="text/javascript">
         $(function () {
             var allowSensitiveInfo = ('@ViewBag.AllowSensitiveInfo' === 'True');
+            var detailBaseUrl = '@Url.Action("Detail", "Home", new { id = "__ID__" })';
             var showCols = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27];
 
             if (allowSensitiveInfo !== true) {
@@ -239,9 +243,21 @@
                 'tr',
                 function () {
                     var data = table.row(this).data();;
+                    var kerbValue = (data[2] || '').trim();
+                    var detailLinkContainer = $("#detail-page-link-container");
+                    var detailLink = $("#detail-page-link");
 
                     var tableDetails = $("#table-details");
                     tableDetails.empty();
+
+                    if (kerbValue) {
+                        detailLink.attr("href", detailBaseUrl.replace("__ID__", encodeURIComponent(kerbValue)));
+                        detailLinkContainer.show();
+                    } else {
+                        detailLink.attr("href", "#");
+                        detailLinkContainer.hide();
+                    }
+
                     $.each(data,
                         function (index, value) {
                             if (showCols.indexOf(index) > -1) {
